@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, PasswordField, SubmitField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo
 
 class SignupForm(FlaskForm):
@@ -12,3 +13,19 @@ class SignupForm(FlaskForm):
         EqualTo('password', message='Passwords must match.')
     ])
     submit = SubmitField('Sign up & set-up the company’s Profile')
+
+class CompanyProfileForm(FlaskForm):
+    company_name = StringField('Company Name', validators=[DataRequired()])
+    industry_type = StringField('Industry Type', validators=[DataRequired()])
+    num_employees = IntegerField('Number of Employees', validators=[DataRequired()])
+    street = StringField('Street/Building', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    province = StringField('Province', validators=[DataRequired()])
+    postal_code = StringField('Postal Code', validators=[DataRequired()])
+    phone = StringField('Phone Number', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    website = StringField('Website', validators=[DataRequired()])
+    employee_data = FileField('Upload Employee Data', validators=[
+        FileAllowed(['csv'], 'Only CSV files are allowed!')
+    ])
+    submit = SubmitField('Confirm and Next')
