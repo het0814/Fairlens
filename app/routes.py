@@ -4,7 +4,7 @@ from .forms import SignupForm,CompanyProfileForm,DiversityGoalForm
 main = Blueprint('main', __name__)
 
 @main.route('/')
-def home():
+def index():
     return render_template('login.html')
 
 @main.route('/signup', methods=['GET', 'POST'])
@@ -45,7 +45,16 @@ def diversity_goal_setup():
         print(diversity_goals)
 
         if form.submit.data:
-            return redirect(url_for('main.home'))
+            return redirect(url_for('main.index'))
         flash('Diversity goals saved successfully!', 'success')
 
     return render_template('diversity_goal.html', form=form)
+
+
+@main.route('/home')
+def home():
+    return render_template('home.html')
+
+@main.route('/job-management')
+def job_management():
+    return "<h1>Job & Resume Management Page</h1>"
