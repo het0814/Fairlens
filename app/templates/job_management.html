@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job & Resume Management Dashboard</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Job & Resume Management Dashboard</h1>
+    <div style="float: left; width: 20%; margin-right: 2%;">
+        <p><strong>Total Job Postings:</strong> {{ stats.total_jobs }}</p>
+        <p><strong>Active Jobs:</strong> {{ stats.active_jobs }}</p>
+        <p><strong>Deadline Today:</strong> {{ stats.deadlines_today }}</p>
+    </div>
+    <div style="float: left; width: 55%; margin-right: 2%;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Job ID</th>
+                    <th>Position</th>
+                    <th>Total Applicants</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td>{{ job.job_id }}</td>
+                    <td>{{ job.position }}</td>
+                    <td>{{ job.total_applicants }}</td>
+                    <td>{{ job.department }}</td>
+                    <td>{{ job.status }}</td>
+                    <td>
+                        <button>Edit</button>
+                        <button>Delete</button>
+                        <button>Analyze</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <form action="/create-job">
+        <button type="submit" style="margin-top: 20px; font-size: 16px;">Create Job Posting</button>
+    </form>
+</body>
+</html>

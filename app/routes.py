@@ -57,4 +57,17 @@ def home():
 
 @main.route('/job-management')
 def job_management():
-    return "<h1>Job & Resume Management Page</h1>"
+
+    jobs = [
+        {"job_id": 1, "position": "Software Developer", "total_applicants": 100, "department": "Tech", "status": "Active"}
+    ]
+    stats = {
+        "total_jobs": len(jobs),
+        "active_jobs": len([job for job in jobs if job["status"] == "Active"]),
+        "deadlines_today": len([job for job in jobs if job["status"] == "Deadline Today"])
+    }
+    return render_template('job_management.html', jobs=jobs, stats=stats)
+
+@main.route('/create-job')
+def create_job():
+    return "<h1>Create Job Posting Page</h1>"
