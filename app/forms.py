@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, IntegerField ,FloatField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField ,FloatField, TextAreaField, DateField
 from wtforms.validators import DataRequired, Email, EqualTo , NumberRange
 
 class SignupForm(FlaskForm):
@@ -39,3 +39,12 @@ class DiversityGoalForm(FlaskForm):
     veteran_representation = FloatField('Veteran Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
     submit = SubmitField('Set-up and Complete')
 
+class JobForm(FlaskForm):
+    job_id = StringField("Job ID", validators=[DataRequired()])
+    position = StringField("Name of the Position", validators=[DataRequired()])
+    department_id = StringField("Department ID", validators=[DataRequired()])
+    department_name = StringField("Department Name", validators=[DataRequired()])
+    description = TextAreaField("Job Description", validators=[DataRequired()])
+    start_date = DateField("Start Date", validators=[DataRequired()])
+    close_date = DateField("Close Date", validators=[DataRequired()])
+    submit = SubmitField("Create")

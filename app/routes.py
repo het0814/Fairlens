@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from .forms import SignupForm,CompanyProfileForm,DiversityGoalForm
+from flask import Blueprint, render_template, redirect, url_for, flash,request
+from .forms import SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm
+from datetime import datetime
+
 
 main = Blueprint('main', __name__)
 
@@ -68,6 +70,67 @@ def job_management():
     }
     return render_template('job_management.html', jobs=jobs, stats=stats)
 
-@main.route('/create-job')
+
+@main.route('/create-job', methods=['GET', 'POST'])
 def create_job():
-    return "<h1>Create Job Posting Page</h1>"
+    form = JobForm()
+    if form.validate_on_submit():
+        job_data = {
+            "job_id": form.job_id.data,
+            "position": form.position.data,
+            "department_id": form.department_id.data,
+            "department_name": form.department_name.data,
+            "description": form.description.data,
+            "start_date": form.start_date.data,
+            "close_date": form.close_date.data
+        }
+
+        # later to dynamo
+        print(job_data)
+
+        flash("Job created successfully!", "success")
+        return redirect(url_for('main.job_management'))
+    
+    return render_template('create_job.html', form=form)
+
+@main.route('/edit-job/<job_id>', methods=['GET', 'POST'])
+def edit_job(job_id):
+    # query for dynamo
+    job = {
+        "job_id": job_id,
+        "position": "Software Developer",
+        "department_id": "101",
+        "department_name": "Tech",
+        "description": "Develop and maintain software.",
+        "start_date":  datetime.strptime("2024-12-01", "%Y-%m-%d"),
+        "close_date": datetime.strptime("2024-12-31", "%Y-%m-%d")
+    }
+
+    form = JobForm(data=job)
+
+    if form.validate_on_submit():
+        updated_job = {
+            "job_id": form.job_id.data,
+            "position": form.position.data,
+            "department_id": form.department_id.data,
+            "department_name": form.department_name.data,
+            "description": form.description.data,
+            "start_date": form.start_date.data,
+            "close_date": form.close_date.data
+        }
+        print(f"Updated Job: {updated_job}")
+
+        flash("Job updated successfully!", "success")
+        return redirect(url_for('main.job_management'))
+
+    return render_template('edit_job.html', form=form, job_id=job_id)
+
+@main.route('/delete-job/<job_id>', methods=['GET', 'POST'])
+def delete_job(job_id):
+    if request.method == 'POST':
+        # delete from dynamo
+        print(f"Job with ID {job_id} has been deleted.")
+        flash(f"Job {job_id} deleted successfully!", "success")
+        return redirect(url_for('main.job_management'))
+
+    return render_template('delete_job.html', job_id=job_id)

@@ -47,8 +47,12 @@
                     <td>{{ job.department }}</td>
                     <td>{{ job.status }}</td>
                     <td>
-                        <button>Edit</button>
-                        <button>Delete</button>
+                        <a href="/edit-job/{{ job.job_id }}">
+                            <button>Edit</button>
+                        </a>
+                        <a href="/delete-job/{{ job.job_id }}">
+                            <button>Delete</button>
+                        </a>
                         <button>Analyze</button>
                     </td>
                 </tr>
