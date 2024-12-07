@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diversity Goal Setup</title>
+</head>
+<body>
+    <h1>Diversity Goal Set-up</h1>
+    <form method="POST" action="{{ url_for('main.diversity_goal_setup') }}">
+        {{ form.hidden_tag() }}
+
+        <label>{{ form.male_representation.label }}</label>
+        {{ form.male_representation(size=5) }}<br>
+
+        <label>{{ form.female_representation.label }}</label>
+        {{ form.female_representation(size=5) }}<br>
+
+        <label>{{ form.transgender_representation.label }}</label>
+        {{ form.transgender_representation(size=5) }}<br>
+
+        <label>{{ form.lgbtq_representation.label }}</label>
+        {{ form.lgbtq_representation(size=5) }}<br>
+
+        <label>{{ form.indigenous_representation.label }}</label>
+        {{ form.indigenous_representation(size=5) }}<br>
+
+        <label>{{ form.disability_representation.label }}</label>
+        {{ form.disability_representation(size=5) }}<br>
+
+        <label>{{ form.minority_representation.label }}</label>
+        {{ form.minority_representation(size=5) }}<br>
+
+        <label>{{ form.veteran_representation.label }}</label>
+        {{ form.veteran_representation(size=5) }}<br>
+        {{ form.submit() }}
+    </form>
+</body>
+</html>
