@@ -5,12 +5,12 @@ import os
 import json
 from math import pi
 import matplotlib
-matplotlib.use('Agg')  
+matplotlib.use('Agg')  # Use the Agg backend for Matplotlib (no GUI required)
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 import concurrent.futures
-import re  
+import re  # Importing regular expression module to search for gender words
 
 # Initialize Flask app
 app = Flask(__name__)
