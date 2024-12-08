@@ -17,8 +17,7 @@ app = Flask(__name__)
 
 # Initialize Hugging Face Inference Client
 client = InferenceClient(api_key="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")
-
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'fairlens/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def langchain_document_loader(file_path):
