@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Screening and Ranking</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .result-container {
+            margin-top: 20px;
+        }
+        .resume-result {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .resume-result h4 {
+            margin-bottom: 10px;
+        }
+        .resume-result p {
+            font-size: 14px;
+        }
+        .resume-result .chart-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .gender-info {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mt-5">Resume Screening and Ranking</h2>
+        
+        <!-- Form to upload resumes and enter job description -->
+        <form action="/screen_resumes" method="POST" enctype="multipart/form-data" class="mt-4">
+            <div class="form-group">
+                <label for="job_description">Job Description:</label>
+                <textarea id="job_description" name="job_description" class="form-control" rows="6" placeholder="Paste the job description here..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="resumes">Upload Resumes (PDF format):</label>
+                <input type="file" id="resumes" name="resumes" class="form-control-file" multiple required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit Resumes</button>
+        </form>
+
+        <!-- Display errors (if any) -->
+        <div id="error-message" class="error mt-4" style="display: none;"></div>
+
+        <!-- Display results -->
+        <div id="results" class="result-container" style="display: none;">
+            <h3 class="text-center">Ranking Results</h3>
+            <div id="results-list"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form submission and result display
+        $("form").on("submit", function(e) {
+            e.preventDefault();
+            $("#error-message").hide();
+            $("#results").hide();
+            $("#results-list").empty();
+
+            // FormData to send files and data
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/screen_resumes',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.error) {
+                        $("#error-message").text(response.error).show();
+                    } else {
+                        $("#results").show();
+                        response.forEach(function(resume) {
+                            var resumeDiv = $('<div class="resume-result"></div>');
+                            resumeDiv.append('<h4>' + resume.resume_filename + ' (Rank: ' + resume.rank + ')</h4>');
+                            resumeDiv.append('<p><strong>Analysis:</strong><br>' + resume.text_analysis.replace(/\n/g, "<br>") + '</p>');
+                            
+                            // Display gender information
+                            if (resume.gender_found.length > 0) {
+                                var genderInfo = '<div class="gender-info"><strong>Gender Info:</strong><br>';
+                                genderInfo += 'Gender: ' + resume.gender_found.join(', ') + '</div>';
+                                resumeDiv.append(genderInfo);
+                            }
+
+                            // Display radar chart
+                            var radarChartHtml = '<div class="chart-container"><img src="data:image/png;base64,' + resume.radar_chart + '" alt="Radar Chart"></div>';
+                            resumeDiv.append(radarChartHtml);
+
+                            // Display the match scores in fixed order
+                            var fixedCategories = ["Soft skills", "Hard skills", "Experience", "Education and certifications", "Keywords"];
+                            var scoreTable = '<table class="table table-bordered mt-3"><tr><th>Category</th><th>Score</th></tr>';
+                            
+                            // Ensure the categories are displayed in a fixed order
+                            fixedCategories.forEach(function(category) {
+                                var score = resume.scores_dict[category] !== undefined ? resume.scores_dict[category] : 0;
+                                scoreTable += '<tr><td>' + category + '</td><td>' + score + '%</td></tr>';
+                            });
+
+                            scoreTable += '</table>';
+                            resumeDiv.append(scoreTable);
+
+                            $("#results-list").append(resumeDiv);
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $("#error-message").text('An error occurred while processing the resumes: ' + textStatus).show();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
