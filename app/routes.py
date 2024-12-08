@@ -1,20 +1,103 @@
 from flask import Blueprint, render_template, redirect, url_for, flash,request
-from app.forms import SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
+from app.forms import LoginForm,SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
 from datetime import datetime
 
 
+import boto3
+from botocore.exceptions import ClientError
+import hmac
+import hashlib
+import base64
+
 main = Blueprint('main', __name__)
+
+COGNITO_REGION = "us-east-1"
+COGNITO_USER_POOL_ID = "us-east-1_lcY7osG9F"
+COGNITO_CLIENT_ID = "egsqef5om3gqsf2mnqaunt0p0"
+COGNITO_CLIENT_SECRET = "1c9s6s2r20445r36atckb3v9c4u6ms3q850vtj77734mqc1622v8"
+
+def generate_secret_hash(username, client_id, client_secret):
+
+    message = username + client_id
+    dig = hmac.new(
+        client_secret.encode("utf-8"),
+        msg=message.encode("utf-8"),
+        digestmod=hashlib.sha256,
+    ).digest()
+    return base64.b64encode(dig).decode()
+
+def authenticate_user(username, password):
+
+    client = boto3.client("cognito-idp", region_name=COGNITO_REGION)
+    try:
+        response = client.initiate_auth(
+            ClientId=COGNITO_CLIENT_ID,
+            AuthFlow="USER_PASSWORD_AUTH",
+            AuthParameters={
+                "USERNAME": username,
+                "PASSWORD": password,
+                "SECRET_HASH": generate_secret_hash(username, COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET),
+            },
+        )
+        return "Success", response 
+    except ClientError as e:
+        return None, e.response["Error"]["Message"]  
+
+def sign_up_user(first_name, last_name, email, password):
+    client = boto3.client("cognito-idp", region_name=COGNITO_REGION)
+    try:
+        response = client.sign_up(
+            ClientId=COGNITO_CLIENT_ID,
+            SecretHash=generate_secret_hash(email, COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET),
+            Username=email,
+            Password=password,
+            UserAttributes=[
+                {"Name": "given_name", "Value": first_name},
+                {"Name": "family_name", "Value": last_name},
+                {"Name": "email", "Value": email},
+            ],
+        )
+        return "Success", response
+    except ClientError as e:
+        return None, e.response["Error"]["Message"]   
 
 @main.route('/')
 def index():
-    return render_template('login.html')
+    form = LoginForm()
+    return render_template('login.html',form=form)
+
+@main.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+
+        message, response = authenticate_user(username, password)
+
+        if message == "Success":
+            flash("Login successful!", "success")
+            return redirect("/home")
+        else:
+            flash(f"Login failed: {response}", "danger")
+            return render_template("login.html",form=form)  
+    return render_template("login.html",form=form)  
 
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
-        flash('Signup successful! Please set up your company profile.', 'success')
-        return redirect(url_for('main.company_setup'))
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        email = form.email.data
+        password = form.password.data
+
+        message, response = sign_up_user(first_name, last_name, email, password)
+        if message == "Success":
+            flash('Signup successful! Please set up your company profile.', 'success')
+            return redirect(url_for('main.company_setup'))
+        else:            
+            flash(f"Sign-up failed: {response}", "danger")
     return render_template('signup.html', form=form)
 
 @main.route('/company-setup', methods=['GET', 'POST'])
