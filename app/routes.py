@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash,request
-from .forms import SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm
+from app.forms import SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
 from datetime import datetime
 
 
@@ -134,3 +134,41 @@ def delete_job(job_id):
         return redirect(url_for('main.job_management'))
 
     return render_template('delete_job.html', job_id=job_id)
+
+@main.route('/analyze-resume/<job_id>', methods=['GET', 'POST'])
+def analyze_resume(job_id):
+    # dynamo query
+    job = {
+        "job_id": job_id,
+        "department_id": "101",
+        "position": "Software Developer",
+        "department_name": "Tech",
+        "job_description": "Develop and maintain software.",
+        "start_date":  datetime.strptime("2024-12-01", "%Y-%m-%d"),
+        "close_date": datetime.strptime("2024-12-31", "%Y-%m-%d")
+    }
+
+    form = ResumeUploadForm()
+
+    top_applicants=[]
+     
+
+    if form.validate_on_submit():
+        if form.resume_files.data:
+            for file in form.resume_files.data:
+                file.save(f"uploads/{file.filename}")
+                flash(f"Uploaded {file.filename}", "success")
+        
+        if form.analyze.data:
+            # ai function call for shortlist
+            top_applicants = {
+                "Male": ["Applicant 1", "Applicant 2"],
+                "Female": ["Applicant 3", "Applicant 4"],
+                "Trans": ["Applicant 5"],
+                "LGBTQ": ["Applicant 6"],
+                "Minority": ["Applicant 7"],
+                "Disability": ["Applicant 8"],
+            }
+            flash("Analysis completed successfully!", "success")
+
+    return render_template("analyze_resume.html", form=form, job=job, top_applicants=top_applicants)

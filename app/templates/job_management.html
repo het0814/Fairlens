@@ -53,7 +53,9 @@
                         <a href="/delete-job/{{ job.job_id }}">
                             <button>Delete</button>
                         </a>
-                        <button>Analyze</button>
+                        <a href="/analyze-resume/{{ job.job_id }}">
+                            <button>Analyze</button>
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}

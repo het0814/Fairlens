@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyze Job</title>
+    <style>
+        form {
+            max-width: 800px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .category {
+            display: inline-block;
+            width: 14%;
+            text-align: center;
+            vertical-align: top;
+        }
+        .applicant {
+            border: 1px solid black;
+            padding: 5px;
+            margin: 5px 0;
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Job Position: "{{ job['position'] }}"</h1>
+    <div style="max-width: 800px; margin: auto;">
+        <p><strong>Job ID:</strong> {{ job['job_id'] }}</p>
+        <p><strong>Department ID:</strong> {{ job['department_id'] }}</p>
+        <p><strong>Department Name:</strong> {{ job['department_name'] }}</p>
+        <p><strong>Job Description:</strong> {{ job['job_description'] }}</p>
+        <p><strong>Start Date:</strong> {{ job['start_date'] }}</p>
+        <p><strong>Close Date:</strong> {{ job['close_date'] }}</p>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.resume_files.label }}
+            {{ form.resume_files(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.analyze(class="btn btn-success") }}
+        </div>
+    </form>
+    {% if top_applicants %}
+        <h2 style="text-align: center;">Top Applicants</h2>
+        <div style="max-width: 800px; margin: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+            {% for category, applicants in top_applicants.items() %}
+                <div class="category">
+                    <h3>{{ category }}</h3>
+                    {% for applicant in applicants %}
+                        <div class="applicant">{{ applicant }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>

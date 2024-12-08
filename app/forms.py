@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileField, FileAllowed, MultipleFileField
 from wtforms import StringField, PasswordField, SubmitField, IntegerField ,FloatField, TextAreaField, DateField
 from wtforms.validators import DataRequired, Email, EqualTo , NumberRange
 
@@ -48,3 +48,8 @@ class JobForm(FlaskForm):
     start_date = DateField("Start Date", validators=[DataRequired()])
     close_date = DateField("Close Date", validators=[DataRequired()])
     submit = SubmitField("Create")
+
+class ResumeUploadForm(FlaskForm):
+    resume_files = MultipleFileField("Upload Resumes", validators=[DataRequired(),
+        FileAllowed(['pdf','docx'], 'Only PDF and DOCX files are allowed!')])
+    analyze = SubmitField("Analyze")
