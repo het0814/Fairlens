@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyze Job</title>
+    <title>Analyze Resumes</title>
     <style>
         form {
             max-width: 800px;
@@ -50,7 +50,6 @@
             {{ form.resume_files.label }}
             {{ form.resume_files(class="form-control") }}
         </div>
-
         <div class="form-group">
             {{ form.analyze(class="btn btn-success") }}
         </div>
@@ -68,5 +67,44 @@
             {% endfor %}
         </div>
     {% endif %}
+    {% if ranked_results %}
+        <div id="results" class="result-container">
+            <h3 class="text-center">Ranking Results</h3>
+            <div id="results-list">
+                {% for resume in ranked_results %}
+                    <div class="resume-result">
+                        <h4>{{ resume.resume_filename }} (Rank: {{ resume.rank }})</h4>
+                        <p><strong>Analysis:</strong><br>{{ resume.text_analysis}}</p>
+
+                        {% if resume.gender_found %}
+                            <div class="gender-info">
+                                <strong>Gender Info:</strong><br>
+                                Gender: {{ resume.gender_found|join(', ') }}
+                            </div>
+                        {% endif %}
+
+                        <div class="chart-container">
+                            <img src="data:image/png;base64,{{ resume.radar_chart }}" alt="Radar Chart">
+                        </div>
+
+                        <h5>Match Scores</h5>
+                        <table class="table table-bordered mt-3">
+                            <tr>
+                                <th>Category</th>
+                                <th>Score</th>
+                            </tr>
+                            {% for category in ['Soft skills', 'Hard skills', 'Experience', 'Education and certifications', 'Keywords'] %}
+                                <tr>
+                                    <td>{{ category }}</td>
+                                    <td>{{ resume.scores_dict[category] if resume.scores_dict[category] is not none else 0 }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
 </body>
 </html>

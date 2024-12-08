@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, flash,request
+from flask import Blueprint, jsonify, render_template, redirect, url_for, flash,request
 from app.forms import LoginForm,SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
 from datetime import datetime
-
+import concurrent.futures
+from app.AI_services import process_single_resume
 
 import boto3
 from botocore.exceptions import ClientError
@@ -226,32 +227,62 @@ def analyze_resume(job_id):
         "department_id": "101",
         "position": "Software Developer",
         "department_name": "Tech",
-        "job_description": "Develop and maintain software.",
+        "job_description": "The Data Analyst will use BI tools to deliver data-driven recommendations that support business objectives",
         "start_date":  datetime.strptime("2024-12-01", "%Y-%m-%d"),
         "close_date": datetime.strptime("2024-12-31", "%Y-%m-%d")
     }
-
     form = ResumeUploadForm()
 
-    top_applicants=[]
-     
-
+    top_applicants=[]  
+    results = []  
+    ranked_results=[]
     if form.validate_on_submit():
-        if form.resume_files.data:
-            for file in form.resume_files.data:
-                file.save(f"uploads/{file.filename}")
-                flash(f"Uploaded {file.filename}", "success")
-        
-        if form.analyze.data:
-            # ai function call for shortlist
-            top_applicants = {
-                "Male": ["Applicant 1", "Applicant 2"],
-                "Female": ["Applicant 3", "Applicant 4"],
-                "Trans": ["Applicant 5"],
-                "LGBTQ": ["Applicant 6"],
-                "Minority": ["Applicant 7"],
-                "Disability": ["Applicant 8"],
-            }
-            flash("Analysis completed successfully!", "success")
+        uploaded_files = form.resume_files.data
+        job_description = job["job_description"]
 
-    return render_template("analyze_resume.html", form=form, job=job, top_applicants=top_applicants)
+        if not uploaded_files:
+            flash("No resumes uploaded", "error")
+            return render_template("analyze_resumes.html",form=form,job=job,top_applicants=top_applicants, ranked_results='no resume')
+        
+        if not job_description:
+            flash("Job description is required", "error")
+            return render_template("analyze_resumes.html",form=form,job=job,top_applicants=top_applicants, ranked_results='no job')
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = {
+                executor.submit(process_single_resume, file, job_description): file
+                for file in uploaded_files
+            }
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    result = future.result()
+                    if result:
+                        results.append(result)
+                except Exception as e:
+                    flash(f"Error processing a resume: {str(e)}", "error")
+
+        if not results:
+            flash("No valid resumes processed", "error")
+            return render_template("analyze_resume.html",form=form,job=job,top_applicants=top_applicants, ranked_results='no result')
+
+        ranked_results = sorted(results, key=lambda x: x["total_score"], reverse=True)
+        for idx, result in enumerate(ranked_results):
+            result["rank"] = idx + 1
+
+        top_applicants = {
+                "Male": [],
+                "Female": [],
+                "Transgender": [],
+                "LGBTQ": [],
+                "Minority": [],
+                "Disability": [],
+            }
+        for result in results:
+            for gender in result["gender_found"]:
+                if gender.capitalize() in top_applicants:
+                    top_applicants[gender.capitalize()].append(result["resume_filename"])
+
+        flash("Analysis completed successfully!", "success")
+        return render_template("analyze_resume.html", form=form,job=job,top_applicants=top_applicants, ranked_results=ranked_results)
+
+    return render_template("analyze_resume.html", form=form,job=job,top_applicants=top_applicants, ranked_results=ranked_results)
