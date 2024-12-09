@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, MultipleFileField
-from wtforms import StringField, PasswordField, SubmitField, IntegerField ,FloatField, TextAreaField, DateField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField ,FloatField, TextAreaField, DecimalField
 from wtforms.validators import DataRequired, Email, EqualTo , NumberRange
 
 class LoginForm(FlaskForm):
@@ -34,14 +34,14 @@ class CompanyProfileForm(FlaskForm):
     submit = SubmitField('Confirm and Next')
 
 class DiversityGoalForm(FlaskForm):
-    male_representation = FloatField('Male Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
-    female_representation = FloatField('Female Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
-    transgender_representation = FloatField('Transgender Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
-    lgbtq_representation = FloatField('LGBTQ Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
-    indigenous_representation = FloatField('Indigenous Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
-    disability_representation = FloatField('Disability Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
-    minority_representation = FloatField('Minority Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
-    veteran_representation = FloatField('Veteran Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    male_representation = DecimalField('Male Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    female_representation = DecimalField('Female Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    transgender_representation = DecimalField('Transgender Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    lgbtq_representation = DecimalField('LGBTQ Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    indigenous_representation = DecimalField('Indigenous Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    disability_representation = DecimalField('Disability Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    minority_representation = DecimalField('Minority Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
+    veteran_representation = DecimalField('Veteran Representation (%)', validators=[DataRequired(), NumberRange(0, 100)])
     submit = SubmitField('Set-up and Complete')
 
 class JobForm(FlaskForm):
@@ -50,8 +50,10 @@ class JobForm(FlaskForm):
     department_id = StringField("Department ID", validators=[DataRequired()])
     department_name = StringField("Department Name", validators=[DataRequired()])
     description = TextAreaField("Job Description", validators=[DataRequired()])
-    start_date = DateField("Start Date", validators=[DataRequired()])
-    close_date = DateField("Close Date", validators=[DataRequired()])
+    start_date = StringField("Start Date", validators=[DataRequired()])
+    close_date = StringField("Close Date", validators=[DataRequired()])
+    total_applicant = StringField("Total Applicant", validators=[DataRequired()])
+    status = StringField("Status", validators=[DataRequired()])
     submit = SubmitField("Create")
 
 class ResumeUploadForm(FlaskForm):

@@ -1,8 +1,10 @@
+import uuid
 from flask import Blueprint, jsonify, render_template, redirect, url_for, flash,request
 from app.forms import LoginForm,SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
 from datetime import datetime
 import concurrent.futures
 from app.AI_services import process_single_resume
+from app.db_services import *
 
 import boto3
 from botocore.exceptions import ClientError
@@ -105,7 +107,8 @@ def signup():
 def company_setup():
     form = CompanyProfileForm()
     if form.validate_on_submit():
-        # Save locally for now willconnect when aws is setuped
+        company_id = str(uuid.uuid4())
+        insert_company(company_id,form.company_name.data,form.industry_type.data,form.num_employees.data,form.street.data,form.city.data,form.province.data,form.postal_code.data,form.phone.data,form.email.data,form.website.data)
         if form.employee_data.data:
             file = form.employee_data.data
             file.save(f"uploads/{file.filename}")
@@ -117,19 +120,8 @@ def company_setup():
 def diversity_goal_setup():
     form = DiversityGoalForm()
     if form.validate_on_submit():
-        # diversity goals to database for now, justprint for virificaion
-        diversity_goals = {
-            "male_representation": form.male_representation.data,
-            "female_representation": form.female_representation.data,
-            "transgender_representation": form.transgender_representation.data,
-            "lgbtq_representation": form.lgbtq_representation.data,
-            "indigenous_representation": form.indigenous_representation.data,
-            "disability_representation": form.disability_representation.data,
-            "minority_representation": form.minority_representation.data,
-            "veteran_representation": form.veteran_representation.data,
-        }
-        print(diversity_goals)
-
+        diversity_id = str(uuid.uuid4())
+        insert_diversity(diversity_id,form.male_representation.data,form.female_representation.data,form.transgender_representation.data,form.lgbtq_representation.data,form.indigenous_representation.data,form.disability_representation.data,form.minority_representation.data,form.veteran_representation.data)
         if form.submit.data:
             return redirect(url_for('main.index'))
         flash('Diversity goals saved successfully!', 'success')
@@ -144,9 +136,7 @@ def home():
 @main.route('/job-management')
 def job_management():
 
-    jobs = [
-        {"job_id": 1, "position": "Software Developer", "total_applicants": 100, "department": "Tech", "status": "Active"}
-    ]
+    jobs=get_all_jobs()
     stats = {
         "total_jobs": len(jobs),
         "active_jobs": len([job for job in jobs if job["status"] == "Active"]),
@@ -159,19 +149,7 @@ def job_management():
 def create_job():
     form = JobForm()
     if form.validate_on_submit():
-        job_data = {
-            "job_id": form.job_id.data,
-            "position": form.position.data,
-            "department_id": form.department_id.data,
-            "department_name": form.department_name.data,
-            "description": form.description.data,
-            "start_date": form.start_date.data,
-            "close_date": form.close_date.data
-        }
-
-        # later to dynamo
-        print(job_data)
-
+        insert_job(form.job_id.data,form.position.data,form.department_id.data,form.department_name.data,form.description.data,form.total_applicant.data,form.status.data,form.start_date.data,form.close_date.data)
         flash("Job created successfully!", "success")
         return redirect(url_for('main.job_management'))
     
@@ -179,31 +157,11 @@ def create_job():
 
 @main.route('/edit-job/<job_id>', methods=['GET', 'POST'])
 def edit_job(job_id):
-    # query for dynamo
-    job = {
-        "job_id": job_id,
-        "position": "Software Developer",
-        "department_id": "101",
-        "department_name": "Tech",
-        "description": "Develop and maintain software.",
-        "start_date":  datetime.strptime("2024-12-01", "%Y-%m-%d"),
-        "close_date": datetime.strptime("2024-12-31", "%Y-%m-%d")
-    }
-
+    job=get_job_by_jobid(job_id)
     form = JobForm(data=job)
 
     if form.validate_on_submit():
-        updated_job = {
-            "job_id": form.job_id.data,
-            "position": form.position.data,
-            "department_id": form.department_id.data,
-            "department_name": form.department_name.data,
-            "description": form.description.data,
-            "start_date": form.start_date.data,
-            "close_date": form.close_date.data
-        }
-        print(f"Updated Job: {updated_job}")
-
+        update_job(form.job_id.data,form.position.data,form.department_id.data,form.department_name.data,form.description.data,form.total_applicant.data,form.status.data,form.start_date.data,form.close_date.data)
         flash("Job updated successfully!", "success")
         return redirect(url_for('main.job_management'))
 
@@ -212,25 +170,14 @@ def edit_job(job_id):
 @main.route('/delete-job/<job_id>', methods=['GET', 'POST'])
 def delete_job(job_id):
     if request.method == 'POST':
-        # delete from dynamo
-        print(f"Job with ID {job_id} has been deleted.")
+        delete_job_item(job_id)
         flash(f"Job {job_id} deleted successfully!", "success")
         return redirect(url_for('main.job_management'))
-
     return render_template('delete_job.html', job_id=job_id)
 
 @main.route('/analyze-resume/<job_id>', methods=['GET', 'POST'])
 def analyze_resume(job_id):
-    # dynamo query
-    job = {
-        "job_id": job_id,
-        "department_id": "101",
-        "position": "Software Developer",
-        "department_name": "Tech",
-        "job_description": "The Data Analyst will use BI tools to deliver data-driven recommendations that support business objectives",
-        "start_date":  datetime.strptime("2024-12-01", "%Y-%m-%d"),
-        "close_date": datetime.strptime("2024-12-31", "%Y-%m-%d")
-    }
+    job=get_job_by_jobid(job_id)
     form = ResumeUploadForm()
 
     top_applicants=[]  
@@ -238,7 +185,7 @@ def analyze_resume(job_id):
     ranked_results=[]
     if form.validate_on_submit():
         uploaded_files = form.resume_files.data
-        job_description = job["job_description"]
+        job_description = job["description"]
 
         if not uploaded_files:
             flash("No resumes uploaded", "error")
