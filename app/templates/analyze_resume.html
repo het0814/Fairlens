@@ -41,6 +41,7 @@
         <p><strong>Department ID:</strong> {{ job['department_id'] }}</p>
         <p><strong>Department Name:</strong> {{ job['department_name'] }}</p>
         <p><strong>Job Description:</strong> {{ job['description'] }}</p>
+        <p><strong>Looking for:</strong> {{ job['looking_for'] }}</p>
         <p><strong>Start Date:</strong> {{ job['start_date'] }}</p>
         <p><strong>Close Date:</strong> {{ job['close_date'] }}</p>
     </div>
@@ -55,7 +56,7 @@
             {{ form.analyze(class="btn btn-success") }}
         </div>
     </form>
-    {% if top_applicants %}
+    <!-- {% if top_applicants %}
         <h2 style="text-align: center;">Top Applicants</h2>
         <div style="max-width: 800px; margin: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
             {% for category, applicants in top_applicants.items() %}
@@ -105,7 +106,7 @@
                 {% endfor %}
             </div>
         </div>
-    {% endif %}
+    {% endif %} -->
 
 </body>
 </html>

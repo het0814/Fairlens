@@ -49,6 +49,7 @@ class JobForm(FlaskForm):
     position = StringField("Name of the Position", validators=[DataRequired()])
     department_id = StringField("Department ID", validators=[DataRequired()])
     department_name = StringField("Department Name", validators=[DataRequired()])
+    looking_for = TextAreaField("What you Looking for in candidate", validators=[DataRequired()])
     description = TextAreaField("Job Description", validators=[DataRequired()])
     start_date = StringField("Start Date", validators=[DataRequired()])
     close_date = StringField("Close Date", validators=[DataRequired()])
