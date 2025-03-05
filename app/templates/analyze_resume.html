@@ -6,107 +6,58 @@
     <title>Analyze Resumes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        form {
-            max-width: 800px;
-            margin: auto;
-            font-family: Arial, sans-serif;
-        }
-        input, button {
+        .analyze-button {
+            display: block;
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            font-size: 16px;
-        }
-        label {
+            padding: 12px;
+            font-size: 18px;
             font-weight: bold;
-        }
-        .category {
-            display: inline-block;
-            width: 14%;
+            background: linear-gradient(135deg, #28a745, #218838);
+            border: none;
+            border-radius: 8px;
+            color: white;
             text-align: center;
-            vertical-align: top;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 6px rgba(40, 167, 69, 0.3);
         }
-        .applicant {
-            border: 1px solid black;
-            padding: 5px;
-            margin: 5px 0;
-            background-color: lightgray;
+        .analyze-button:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0px 6px 10px rgba(40, 167, 69, 0.4);
         }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">Job Position: "{{ job['position'] }}"</h1>
-    <div style="max-width: 800px; margin: auto;">
-        <p><strong>Job ID:</strong> {{ job['job_id'] }}</p>
-        <p><strong>Department ID:</strong> {{ job['department_id'] }}</p>
-        <p><strong>Department Name:</strong> {{ job['department_name'] }}</p>
-        <p><strong>Job Description:</strong> {{ job['description'] }}</p>
-        <p><strong>Looking for:</strong> {{ job['looking_for'] }}</p>
-        <p><strong>Start Date:</strong> {{ job['start_date'] }}</p>
-        <p><strong>Close Date:</strong> {{ job['close_date'] }}</p>
-    </div>
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-
-        <div class="form-group">
-            {{ form.resume_files.label }}
-            {{ form.resume_files(class="form-control") }}
+    <div class="container">
+        <header>
+            <h1>Analyze Resumes for Job Position: "{{ job['position'] }}"</h1>
+        </header>
+        
+        <div class="card">
+            <p><strong>Job ID:</strong> {{ job['job_id'] }}</p>
+            <p><strong>Department ID:</strong> {{ job['department_id'] }}</p>
+            <p><strong>Department Name:</strong> {{ job['department_name'] }}</p>
+            <p><strong>Job Description:</strong> {{ job['description'] }}</p>
+            <p><strong>Looking for:</strong> {{ job['looking_for'] }}</p>
+            <p><strong>Start Date:</strong> {{ job['start_date'] }}</p>
+            <p><strong>Close Date:</strong> {{ job['close_date'] }}</p>
         </div>
-        <div class="form-group">
-            {{ form.analyze(class="btn btn-success") }}
-        </div>
-    </form>
-    <!-- {% if top_applicants %}
-        <h2 style="text-align: center;">Top Applicants</h2>
-        <div style="max-width: 800px; margin: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
-            {% for category, applicants in top_applicants.items() %}
-                <div class="category">
-                    <h3>{{ category }}</h3>
-                    {% for applicant in applicants %}
-                        <div class="applicant">{{ applicant }}</div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% if ranked_results %}
-        <div id="results" class="result-container">
-            <h3 class="text-center">Ranking Results</h3>
-            <div id="results-list">
-                {% for resume in ranked_results %}
-                    <div class="resume-result">
-                        <h4>{{ resume.resume_filename }} (Rank: {{ resume.rank }})</h4>
-                        <p><strong>Analysis:</strong><br>{{ resume.text_analysis}}</p>
-
-                        {% if resume.gender_found %}
-                            <div class="gender-info">
-                                <strong>Gender Info:</strong><br>
-                                Gender: {{ resume.gender_found|join(', ') }}
-                            </div>
-                        {% endif %}
-
-                        <div class="chart-container">
-                            <img src="data:image/png;base64,{{ resume.radar_chart }}" alt="Radar Chart">
-                        </div>
-
-                        <h5>Match Scores</h5>
-                        <table class="table table-bordered mt-3">
-                            <tr>
-                                <th>Category</th>
-                                <th>Score</th>
-                            </tr>
-                            {% for category in ['Soft skills', 'Hard skills', 'Experience', 'Education and certifications', 'Keywords'] %}
-                                <tr>
-                                    <td>{{ category }}</td>
-                                    <td>{{ resume.scores_dict[category] if resume.scores_dict[category] is not none else 0 }}%</td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    </div>
-                {% endfor %}
+        
+        <form method="POST" enctype="multipart/form-data" class="form-container">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                <label>{{ form.resume_files.label }}</label>
+                {{ form.resume_files(class="form-control") }}
             </div>
-        </div>
-    {% endif %} -->
-
+            
+            <div class="button-group">
+                {{ form.analyze(class="analyze-button") }}
+            </div>
+        </form>
+        
+        <!-- Resume Analysis Results (Commented out for later use) -->
+    </div>
 </body>
 </html>

@@ -1,21 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FairLens - Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Login</h1>
-    <form method="POST" action="/login">
-        {{ form.hidden_tag() }}
-        <label>{{ form.username.label }}</label>
-        {{ form.username(size=20) }}<br>
-        <label>{{ form.password.label }}</label>
-        {{ form.password(size=20) }}<br>
-        {{ form.submit() }}
-    </form>
-    <form action="/signup">
-        <button type="submit" style="margin-top: 20px;">Create new Account</button>
-    </form>
+    <div class="container">
+        <header>
+            <h1>Login</h1>
+        </header>
+        
+        <form method="POST" action="/login">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                <label>{{ form.username.label }}</label>
+                {{ form.username(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.password.label }}</label>
+                {{ form.password(class="form-control") }}
+            </div>
+            
+            <button type="submit">Login</button>
+        </form>
+        
+        <div class="button-group">
+            <a href="/signup" class="button secondary">Create New Account</a>
+        </div>
+    </div>
 </body>
 </html>

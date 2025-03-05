@@ -5,36 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diversity Goal Setup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .layout {
+            display: flex;
+            gap: 20px;
+        }
+        .form-container {
+            width: 65%;
+        }
+        .suggestion-box {
+            width: 35%;
+            background: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            color: #e2e8f0;
+        }
+        .suggestion-box h2 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .suggestion-list p {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 1rem;
+        }
+        .auto-fill-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .auto-fill-button:hover {
+            background: linear-gradient(135deg, #0056b3, #004494);
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
-    <h1>Diversity Goal Set-up</h1>
-    <form method="POST" action="{{ url_for('main.diversity_goal_setup') }}">
-        {{ form.hidden_tag() }}
+    <div class="container">
+        <header>
+            <h1>Diversity Goal Setup</h1>
+        </header>
+        
+        <div class="layout">
+            <div class="form-container">
+                <form method="POST" action="{{ url_for('main.diversity_goal_setup') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        <label>{{ form.male_representation.label }}</label>
+                        {{ form.male_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.female_representation.label }}</label>
+                        {{ form.female_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.transgender_representation.label }}</label>
+                        {{ form.transgender_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.lgbtq_representation.label }}</label>
+                        {{ form.lgbtq_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.indigenous_representation.label }}</label>
+                        {{ form.indigenous_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.disability_representation.label }}</label>
+                        {{ form.disability_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.minority_representation.label }}</label>
+                        {{ form.minority_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.veteran_representation.label }}</label>
+                        {{ form.veteran_representation(class="form-control") }}
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit">Save Diversity Goals</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="suggestion-box">
+                <h2>Suggested Diversity Goals</h2>
+                <div class="suggestion-list">
+                    <p><strong>Male Representation:</strong> <span id="sug-male">{{0}}</span>%</p>
+                    <p><strong>Female Representation:</strong> <span id="sug-female">{{1}}</span>%</p>
+                    <p><strong>Transgender Representation:</strong> <span id="sug-trans">{{2}}</span>%</p>
+                    <p><strong>LGBTQ Representation:</strong> <span id="sug-lgbtq">{{ 3 }}</span>%</p>
+                    <p><strong>Indigenous Representation:</strong> <span id="sug-indig">{{4}}</span>%</p>
+                    <p><strong>Disability Representation:</strong> <span id="sug-disab">{{5}}</span>%</p>
+                    <p><strong>Minority Representation:</strong> <span id="sug-minor">{{6}}</span>%</p>
+                    <p><strong>Veteran Representation:</strong> <span id="sug-veteran">{{7}}</span>%</p>
+                </div>
+                <button class="auto-fill-button" onclick="autoFillSuggestions()">Auto-Fill Suggestions</button>
+            </div>
+        </div>
+    </div>
 
-        <label>{{ form.male_representation.label }}</label>
-        {{ form.male_representation(size=5) }}<br>
-
-        <label>{{ form.female_representation.label }}</label>
-        {{ form.female_representation(size=5) }}<br>
-
-        <label>{{ form.transgender_representation.label }}</label>
-        {{ form.transgender_representation(size=5) }}<br>
-
-        <label>{{ form.lgbtq_representation.label }}</label>
-        {{ form.lgbtq_representation(size=5) }}<br>
-
-        <label>{{ form.indigenous_representation.label }}</label>
-        {{ form.indigenous_representation(size=5) }}<br>
-
-        <label>{{ form.disability_representation.label }}</label>
-        {{ form.disability_representation(size=5) }}<br>
-
-        <label>{{ form.minority_representation.label }}</label>
-        {{ form.minority_representation(size=5) }}<br>
-
-        <label>{{ form.veteran_representation.label }}</label>
-        {{ form.veteran_representation(size=5) }}<br>
-        {{ form.submit() }}
-    </form>
+    <script>
+        function autoFillSuggestions() {
+            document.querySelector("[name='male_representation']").value = document.getElementById("sug-male").innerText;
+            document.querySelector("[name='female_representation']").value = document.getElementById("sug-female").innerText;
+            document.querySelector("[name='transgender_representation']").value = document.getElementById("sug-trans").innerText;
+            document.querySelector("[name='lgbtq_representation']").value = document.getElementById("sug-lgbtq").innerText;
+            document.querySelector("[name='indigenous_representation']").value = document.getElementById("sug-indig").innerText;
+            document.querySelector("[name='disability_representation']").value = document.getElementById("sug-disab").innerText;
+            document.querySelector("[name='minority_representation']").value = document.getElementById("sug-minor").innerText;
+            document.querySelector("[name='veteran_representation']").value = document.getElementById("sug-veteran").innerText;
+        }
+    </script>
 </body>
 </html>

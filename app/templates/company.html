@@ -7,38 +7,76 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Company's Profile</h1>
-    <form method="POST" action="{{ url_for('main.company_setup') }}" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <h3>Company Details</h3>
-        <label>{{ form.company_name.label }}</label>
-        {{ form.company_name(size=30) }}<br>
-        <label>{{ form.industry_type.label }}</label>
-        {{ form.industry_type(size=30) }}<br>
-        <label>{{ form.num_employees.label }}</label>
-        {{ form.num_employees(size=30) }}<br>
-
-        <h3>Address</h3>
-        <label>{{ form.street.label }}</label>
-        {{ form.street(size=30) }}<br>
-        <label>{{ form.city.label }}</label>
-        {{ form.city(size=30) }}<br>
-        <label>{{ form.province.label }}</label>
-        {{ form.province(size=30) }}<br>
-        <label>{{ form.postal_code.label }}</label>
-        {{ form.postal_code(size=30) }}<br>
-        <label>{{ form.phone.label }}</label>
-        {{ form.phone(size=30) }}<br>
-        <label>{{ form.email.label }}</label>
-        {{ form.email(size=30) }}<br>
-        <label>{{ form.website.label }}</label>
-        {{ form.website(size=30) }}<br>
-
-        <h3>Upload Employee Data</h3>
-        <label>{{ form.employee_data.label }}</label>
-        {{ form.employee_data() }}<br>
-
-        {{ form.submit() }}
-    </form>
+    <div class="container">
+        <header>
+            <h1>Company's Profile</h1>
+        </header>
+        
+        <form method="POST" action="{{ url_for('main.company_setup') }}" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            
+            <h2>Company Details</h2>
+            <div class="form-group">
+                <label>{{ form.company_name.label }}</label>
+                {{ form.company_name(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.industry_type.label }}</label>
+                {{ form.industry_type(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.num_employees.label }}</label>
+                {{ form.num_employees(class="form-control") }}
+            </div>
+            
+            <h2>Address</h2>
+            <div class="form-group">
+                <label>{{ form.street.label }}</label>
+                {{ form.street(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.city.label }}</label>
+                {{ form.city(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.province.label }}</label>
+                {{ form.province(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.postal_code.label }}</label>
+                {{ form.postal_code(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.phone.label }}</label>
+                {{ form.phone(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.email.label }}</label>
+                {{ form.email(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.website.label }}</label>
+                {{ form.website(class="form-control") }}
+            </div>
+            
+            <h2>Upload Employee Data</h2>
+            <div class="form-group">
+                <label>{{ form.employee_data.label }}</label>
+                {{ form.employee_data(class="form-control") }}
+            </div>
+            
+            <div class="button-group">
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
