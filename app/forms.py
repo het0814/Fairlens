@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, MultipleFileField
-from wtforms import StringField, PasswordField, SubmitField, IntegerField ,FloatField, TextAreaField, DecimalField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField ,FloatField, TextAreaField, DecimalField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo , NumberRange
 
 class LoginForm(FlaskForm):
@@ -24,7 +24,22 @@ class CompanyProfileForm(FlaskForm):
     num_employees = IntegerField('Number of Employees', validators=[DataRequired()])
     street = StringField('Street/Building', validators=[DataRequired()])
     city = StringField('City', validators=[DataRequired()])
-    province = StringField('Province', validators=[DataRequired()])
+    province_choice=[("", "Select Province"),('Alberta', 'Alberta'),
+        ('British Columbia', 'British Columbia'),
+        ('Manitoba', 'Manitoba'),
+        ('New Brunswick', 'New Brunswick'),
+        ('Newfoundland and Labrador', 'Newfoundland and Labrador'),
+        ('Northwest Territories', 'Northwest Territories'),
+        ('Not available', 'Not available'),
+        ('Nova Scotia', 'Nova Scotia'),
+        ('Nunavut', 'Nunavut'),
+        ('Ontario', 'Ontario'),
+        ('Outside Canada', 'Outside Canada'),
+        ('Prince Edward Island', 'Prince Edward Island'),
+        ('Quebec', 'Quebec'),
+        ('Saskatchewan', 'Saskatchewan'),
+        ('Yukon', 'Yukon')]
+    province = SelectField('Province', choices=province_choice, validators=[DataRequired()])
     postal_code = StringField('Postal Code', validators=[DataRequired()])
     phone = StringField('Phone Number', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])

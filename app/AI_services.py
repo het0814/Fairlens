@@ -15,7 +15,7 @@ import docx
 import openai
 
 
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 # client = InferenceClient(api_key="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")
 
 # def langchain_document_loader(file_path):
@@ -184,19 +184,26 @@ OPENAI_API_KEY = "sk-proj-eYC8JqXXNjP8podsNHSTmZxHQCoITASvwcD-zVYPcUVXtAwGvlxYpX
 #     return None
 
 
-# Function to extract text from PDF
-def extract_text_from_pdf(pdf_path):
-    text = ""
-    with fitz.open(pdf_path) as doc:
-        for page in doc:
-            text += page.get_text()
-    return text
+# Function to extract text from PDF and DOCX
+def extract_text(file_path,file_name):
+    if file_name.endswith(".pdf"):
+        text = ""
+        with fitz.open(file_path) as doc:
+            for page in doc:
+                text += page.get_text()
+        return text
+    elif file_name.endswith(".docx"):
+        doc = docx.Document(file_path)
+        return "\n".join([para.text for para in doc.paragraphs])
 
-# Function to extract text from DOCX
-def extract_text_from_docx(docx_path):
-    doc = docx.Document(docx_path)
-    return "\n".join([para.text for para in doc.paragraphs])
-
+def model_inference(messages):
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=messages,
+        api_key=OPENAI_API_KEY
+    )
+    return response
+    
 def analyze_resume_service(resume_text, job_description):
     prompt = f"""
     Your Role is to Compare the following resume against the job description and provide feedback:
@@ -209,10 +216,7 @@ def analyze_resume_service(resume_text, job_description):
     
     Identify missing skills, relevant experience, and suggestions for improvement.
     """
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": "You are a professional resume evaluator.Provide missing skills, relevant experience, and suggestions for improvement"},
-                  {"role": "user", "content": prompt}],
-        api_key=OPENAI_API_KEY
-    )
+    messages=[{"role": "system", "content": "You are a professional resume evaluator.Provide missing skills, relevant experience, and suggestions for improvement"},
+                  {"role": "user", "content": prompt}]
+    response=model_inference(messages)
     return response["choices"][0]["message"]["content"]

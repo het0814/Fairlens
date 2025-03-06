@@ -5,6 +5,7 @@ from datetime import datetime
 import concurrent.futures
 from app.AI_services import *
 from app.db_services import *
+from app.DG_services import *
 
 import boto3
 from botocore.exceptions import ClientError
@@ -113,20 +114,21 @@ def company_setup():
             file = form.employee_data.data
             file.save(f"uploads/{file.filename}")
         flash('Company profile saved successfully!', 'success')
-        return redirect(url_for('main.diversity_goal_setup'))
+        return redirect(url_for('main.diversity_goal_setup', company_id=company_id))
     return render_template('company.html', form=form)
 
-@main.route('/diversity-goal-setup', methods=['GET', 'POST'])
-def diversity_goal_setup():
+@main.route('/diversity-goal-setup/<company_id>', methods=['GET', 'POST'])
+def diversity_goal_setup(company_id):
     form = DiversityGoalForm()
+    province=get_company_by_companyid(company_id)["province"]
+    suggestions= get_diversity_weights(province)
     if form.validate_on_submit():
         diversity_id = str(uuid.uuid4())
         insert_diversity(diversity_id,form.male_representation.data,form.female_representation.data,form.transgender_representation.data,form.lgbtq_representation.data,form.indigenous_representation.data,form.disability_representation.data,form.minority_representation.data,form.veteran_representation.data)
-        if form.submit.data:
-            return redirect(url_for('main.index'))
         flash('Diversity goals saved successfully!', 'success')
-
-    return render_template('diversity_goal.html', form=form)
+        return redirect(url_for('main.index'))
+        
+    return render_template('diversity_goal.html', form=form,suggestions=suggestions)
 
 
 @main.route('/home')
@@ -197,14 +199,7 @@ def analyze_resume(job_id):
         for resume_file in uploaded_files:
             file_path = os.path.join("uploads", resume_file.filename)
             resume_file.save(file_path)
-
-            if resume_file.filename.endswith(".pdf"):
-                resume_text = extract_text_from_pdf(file_path)
-            elif resume_file.filename.endswith(".docx"):
-                resume_text = extract_text_from_docx(file_path)
-            else:
-                continue
-
+            resume_text=extract_text(file_path,resume_file.filename)
             analysis = analyze_resume_service(resume_text, job_description)
             analyses.append({"file_name": resume_file.filename, "analysis": analysis})
 

@@ -59,7 +59,7 @@
         
         <div class="layout">
             <div class="form-container">
-                <form method="POST" action="{{ url_for('main.diversity_goal_setup') }}">
+                <form method="POST">
                     {{ form.hidden_tag() }}
                     
                     <div class="form-group">
@@ -109,16 +109,12 @@
             </div>
             
             <div class="suggestion-box">
-                <h2>Suggested Diversity Goals</h2>
+                <h2>Government Suggested Diversity Goals</h2>
                 <div class="suggestion-list">
-                    <p><strong>Male Representation:</strong> <span id="sug-male">{{0}}</span>%</p>
-                    <p><strong>Female Representation:</strong> <span id="sug-female">{{1}}</span>%</p>
-                    <p><strong>Transgender Representation:</strong> <span id="sug-trans">{{2}}</span>%</p>
-                    <p><strong>LGBTQ Representation:</strong> <span id="sug-lgbtq">{{ 3 }}</span>%</p>
-                    <p><strong>Indigenous Representation:</strong> <span id="sug-indig">{{4}}</span>%</p>
-                    <p><strong>Disability Representation:</strong> <span id="sug-disab">{{5}}</span>%</p>
-                    <p><strong>Minority Representation:</strong> <span id="sug-minor">{{6}}</span>%</p>
-                    <p><strong>Veteran Representation:</strong> <span id="sug-veteran">{{7}}</span>%</p>
+                    <p><strong>Female Representation:</strong> <span id="sug-female">{{suggestions[0]}}</span>%</p>
+                    <p><strong>Indigenous Representation:</strong> <span id="sug-indig">{{suggestions[1]}}</span>%</p>
+                    <p><strong>Disability Representation:</strong> <span id="sug-disab">{{suggestions[2]}}</span>%</p>
+                    <p><strong>Minority Representation:</strong> <span id="sug-minor">{{suggestions[3]}}</span>%</p>
                 </div>
                 <button class="auto-fill-button" onclick="autoFillSuggestions()">Auto-Fill Suggestions</button>
             </div>
@@ -127,14 +123,10 @@
 
     <script>
         function autoFillSuggestions() {
-            document.querySelector("[name='male_representation']").value = document.getElementById("sug-male").innerText;
             document.querySelector("[name='female_representation']").value = document.getElementById("sug-female").innerText;
-            document.querySelector("[name='transgender_representation']").value = document.getElementById("sug-trans").innerText;
-            document.querySelector("[name='lgbtq_representation']").value = document.getElementById("sug-lgbtq").innerText;
             document.querySelector("[name='indigenous_representation']").value = document.getElementById("sug-indig").innerText;
             document.querySelector("[name='disability_representation']").value = document.getElementById("sug-disab").innerText;
             document.querySelector("[name='minority_representation']").value = document.getElementById("sug-minor").innerText;
-            document.querySelector("[name='veteran_representation']").value = document.getElementById("sug-veteran").innerText;
         }
     </script>
 </body>
