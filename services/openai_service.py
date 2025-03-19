@@ -79,62 +79,62 @@ def analyze_resume(resume_text, job_description):
         model='gpt-4o-mini',
         messages=[
             {
-            "role": "system",
-            "content": [
-                {
-                "type": "text",
-                "text":prompt                
-                }
-            ]
+                "role": "system",
+                "content": "Analyze the resume based on the following criteria."
+            },
+            {
+                "role": "user",
+                "content": prompt
             }
         ],
         response_format={
             "type": "json_schema",
             "json_schema": {
-            "name": "resume_analysis",
-            "strict": True,
-            "schema": {
-                "type": "object",
-            "properties": {
-                "candidate_summary": {
+                "name": "resume_analysis",
+                "strict": True,
+                "schema": {
                     "type": "object",
-                    "description": "Provide a concise summary of the candidate’s professional background."
-                },
-                "skills_matching": {
-                    "type": "object",
-                    "description": ""
-                },
-                "job_history_experience": {
-                    "type": "object",
-                    "description": ""
-                },
-                "Education_Qualification": {
-                    "type": "object",
-                    "description": ""
-                },
-                "Keyword_Matching": {
-                    "type": "object",
-                    "descrtiption": ""               
-                },
-                "Strngth_Weakness": {
-                    "type": "object",
-                    "descrtiption": "" 
-                },"AI_Perspective": {
-                    "type": "object",
-                    "descrtiption": ""  
+                    "properties": {
+                        "candidate_summary": {
+                            "type": "string",
+                            "description": "Provide a concise summary of the candidate’s professional background."
+                        },
+                        "skills_matching": {
+                            "type": "string",
+                            "description": "Evaluate how well the candidate’s skills align with the job description by identifying and categorizing."
+                        },
+                        "job_history_experience": {
+                            "type": "string",
+                            "description": "Extract and analyze the candidate’s work experience."
+                        },
+                        "education_qualification": {
+                            "type": "string",
+                            "description": "Assess the candidate’s educational background and certifications."
+                        },
+                        "keyword_matching": {
+                            "type": "string",
+                            "description": "Perform keyword extraction and relevance analysis."
+                        },
+                        "strength_weakness": {
+                            "type": "string",
+                            "description": "Provide a structured assessment of the candidate’s strengths and potential weaknesses."
+                        },
+                        "ai_view": {
+                            "type": "string",
+                            "description": "Deliver an AI-driven assessment of how well the candidate matches the job description."
+                        }
+                    },
+                    "required": [
+                        "candidate_summary",
+                        "skills_matching",
+                        "job_history_experience",
+                        "education_qualification",
+                        "keyword_matching",
+                        "strength_weakness",
+                        "ai_view"
+                    ],
+                    "additionalProperties": False
                 }
-            },
-            "required": [
-                "candidate_summary",
-                "skills_matching",
-                "job_history_experience",
-                "Education_Qualification",
-                "Keyword_Matching",
-                "Strngth_Weakness",
-                "AI_Perspective"
-            ],
-            "additionalProperties": False
-            }
             }
         },
         temperature=1,
@@ -142,8 +142,10 @@ def analyze_resume(resume_text, job_description):
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0,
-        )
+    )
+
     return response.choices[0].message.content
+
 
 def score_resume(resume_text,job_description):
     client = get_openai_client()
