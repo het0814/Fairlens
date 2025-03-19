@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Job Profiles</title>
+</head>
+<body>
+    <div class="relative isolate overflow-hidden bg-gray-900">
+        <div class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
+            <div class="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
+                <img class="h-11" src="https://res.cloudinary.com/dtsuvx8dz/image/upload/v1706986565/hqatxpsjdg3zeql20jfe.png" alt="Your Company">
+                <h1 class="mt-10 text-4xl font-bold tracking-tight text-white sm:text-5xl">FairLens</h1>
+                <p class="mt-6 text-lg leading-8 text-gray-300">Create, update, and manage job profiles seamlessly with our intuitive dashboard.</p>
+                <div class="mt-10 flex items-center gap-x-6">
+                    <a href="/resume_analyzer" class="bg-blue-500 px-8 rounded-2xl py-2.5 text-sm font-semibold text-white hover:bg-blue-400/90">Go to Resume Analyzer</a>
+                </div>
+            </div>
+        </div>
+        <div class="w-screen h-full pb-8">
+            <div class="flex flex-col justify-center items-center text-white">
+                <h2 class="text-2xl font-semibold">Create Job Profile</h2>
+                <form action="/save_job_profile" method="POST" class="mt-6 w-full max-w-4xl bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <label class="block text-sm font-medium text-white">Job ID:</label>
+                    <input type="text" name="jobId" required class="w-full px-4 py-2 mt-2 border rounded-md text-black">
+                    
+                    <label class="block text-sm font-medium text-white mt-4">Job Name:</label>
+                    <input type="text" name="jobName" required class="w-full px-4 py-2 mt-2 border rounded-md text-black">
+                    
+                    <label class="block text-sm font-medium text-white mt-4">Job Description:</label>
+                    <textarea name="qualifications" rows="3" required class="w-full px-4 py-2 mt-2 border rounded-md text-black"></textarea>
+                    
+                    <button type="submit" class="mt-4 bg-green-500 px-6 py-2 rounded-lg text-white font-semibold hover:bg-green-400">Save Job</button>
+                </form>
+                
+                <h2 class="text-2xl font-semibold mt-12">Job Profiles</h2>
+                <table class="w-full max-w-4xl mt-6 border-collapse border border-gray-600">
+                    <thead>
+                        <tr class="bg-gray-800">
+                            <th class="border border-gray-600 px-4 py-2">Job ID</th>
+                            <th class="border border-gray-600 px-4 py-2">Job Name</th>
+                            <th class="border border-gray-600 px-4 py-2">Job Description</th>
+                            <th class="border border-gray-600 px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                        <tr class="bg-gray-700">
+                            <td class="border border-gray-600 px-4 py-2">{{ job.job_id }}</td>
+                            <td class="border border-gray-600 px-4 py-2">{{ job.job_name }}</td>
+                            <td class="border border-gray-600 px-4 py-2">{{ job.job_description }}</td>
+                            <td class="border border-gray-600 px-4 py-2 flex items-center gap-x-2">
+                                <form action="/update_job_profile" method="POST" class="flex gap-x-2">
+                                    <input type="hidden" name="jobId" value="{{ job.job_id }}">
+                                    <input type="text" name="jobName" value="{{ job.job_name }}" required class="w-32 px-2 py-1 border rounded-md text-black">
+                                    <input type="text" name="qualifications" value="{{ job.job_description }}" required class="w-32 px-2 py-1 border rounded-md text-black">
+                                    <button type="submit" class="bg-blue-500 px-4 py-1 rounded-lg text-white font-semibold hover:bg-blue-400">Update</button>
+                                </form>
+                                <a href="/delete_job_profile/{{ job.job_id }}" class="bg-red-500 px-4 py-1 rounded-lg text-white font-semibold hover:bg-red-400">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
