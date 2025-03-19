@@ -1,6 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from services.dynamodb_service import get_dynamodb_client, get_all_jobs
 import boto3
+import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path="os.env")
 
 job_profile_bp = Blueprint('job_profile', __name__)
 
@@ -8,8 +12,8 @@ def get_dynamodb_client():
     return boto3.client(
         'dynamodb',
         region_name='us-east-1',
-        aws_access_key_id='AKIAW5WU44QWFRJXFF54',
-        aws_secret_access_key='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'
+        aws_access_key_id= os.getenv('AWS_ACCESS_KEY'),
+        aws_secret_access_key= os.getenv('AWS_SECRET_KEY')  
     )
 
 @job_profile_bp.route('/save_job_profile', methods=['POST'])
