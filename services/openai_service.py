@@ -6,11 +6,74 @@ def get_openai_client():
 def analyze_resume(resume_text, job_description):
     client = get_openai_client()
     prompt = f"""  
+    ### Task:
+    Analyze the provided candidate resume against the given job description. Extract key insights and generate a structured report with the following details:
+
+    Here are the Candidate Information and Job Description:
     **Job Description:**
     {job_description}
 
     **Resume:**
     {resume_text}
+    ---
+
+    ### **1. Candidate Summary**
+    Provide a concise summary of the candidate’s professional background, highlighting:
+    - Primary industry or domain of expertise.
+    - Years of experience.
+    - Key competencies and strengths.
+    - Notable achievements or recognitions.
+    - Overall career trajectory.
+
+    ---
+
+    ### **2. Skills Matching**
+    Evaluate how well the candidate’s skills align with the job description by identifying and categorizing:
+    - **Hard Skills**: Technical or specialized skills required for the role.
+    - **Soft Skills**: Interpersonal, communication, leadership, and teamwork abilities.
+    - **Skill Relevance**: Compare the required skills in the job description with the candidate's skills.
+    - **Skill Proficiency**: Assess the candidate’s level of expertise based on certifications, endorsements, or experience.
+
+    ---
+
+    ### **3. Job History & Experience**
+    Extract and analyze the candidate’s work experience:
+    - **Job Titles & Experience**: List job titles held, along with years of experience in each role.
+    - **Responsibilities & Achievements**: Provide an overview of responsibilities, accomplishments, and major contributions in previous roles.
+    - **Company Information**: Extract details about previous employers, including industry, company size, and market reputation.
+
+    ---
+
+    ### **4. Education & Qualifications**
+    Assess the candidate’s educational background and certifications:
+    - **Degrees & Institutions**: Extract the highest level of education attained, major field of study, and university attended.
+    - **Relevant Certifications**: Identify any professional certifications or training that align with job requirements.
+    - **Level of Study Relevance**: Determine whether the candidate’s education matches the required qualification level.
+
+    ---
+
+    ### **5. Keyword Matching**
+    Perform keyword extraction and relevance analysis:
+    - Identify key terms from the **job description** (skills, tools, qualifications, required experience).
+    - Extract matching terms from the **candidate’s resume**.
+    - Highlight any **gaps** in required vs. existing skills.
+
+    ---
+
+    ### **6. Strengths & Weaknesses Analysis**
+    Provide a structured assessment of the candidate’s strengths and potential weaknesses:
+    - **Strengths**: Key areas where the candidate excels based on qualifications, skills, or experience.
+    - **Weaknesses**: Any missing skills, gaps in experience, or areas where improvement is needed.
+
+    ---
+
+    ### **7. AI’s Perspective on Job Fit**
+    Deliver an AI-driven assessment of how well the candidate matches the job description:
+    - Provide a **suitability rating** (e.g., Strong Fit, Moderate Fit, Weak Fit).
+    - Justify the rating based on identified strengths, weaknesses, and overall alignment with the job requirements.
+    - Suggest whether the candidate should be shortlisted for further review.
+    ---
+    Ensure that the analysis is **accurate, structured, and relevant** to the job description.
     """
     response = client.chat.completions.create(
         model='gpt-4o-mini',
@@ -20,16 +83,8 @@ def analyze_resume(resume_text, job_description):
             "content": [
                 {
                 "type": "text",
-                "text": "Evaluate a given resume against specific criteria to analyze its strengths and weaknesses.\n\nEnsure accurate assessment by reviewing the resume content in detail, comparing it against the defined criteria to identify key areas such as work experience, skills, achievements, and relevant qualifications.\n\n# Steps\n\n1. **Read the Resume:**\n   - Carefully review each section of the resume, including work experience, education, skills, achievements, and any other relevant sections.\n   \n2. **Compare with Criteria:**\n   - Measure each part of the resume against the provided criteria. Focus on finding matches in experience, skills, and accomplishments that align with the desired qualifications."
+                "text":prompt                
                 }
-            ]
-            },
-            {
-            "role": "user",
-            "content": [
-                {
-                "type": "text",
-                "text": prompt}
             ]
             }
         ],
@@ -40,104 +95,45 @@ def analyze_resume(resume_text, job_description):
             "strict": True,
             "schema": {
                 "type": "object",
-                "properties": {
-                "skills_match": {
+            "properties": {
+                "candidate_summary": {
                     "type": "object",
-                    "properties": {
-                    "technical_skills": {
-                        "type": "array",
-                        "description": "Provide the summary of technical skills. How well they allign with the job description.",
-                        "items": {
-                        "type": "string"
-                        }
-                    },
-                    "soft_skills": {
-                        "type": "array",
-                        "description": "Provide the summary of soft skills. How well they allign with the job description.",
-                        "items": {
-                        "type": "string"
-                        }
-                    }
-                    },
-                    "required": [
-                    "technical_skills",
-                    "soft_skills"
-                    ],
-                    "additionalProperties": False
+                    "description": "Provide a concise summary of the candidate’s professional background."
                 },
-                "experience_and_career_progression": {
+                "skills_matching": {
                     "type": "object",
-                    "properties": {
-                    "total_years_experience": {
-                        "type": "number",
-                        "description": "Summary of Total years of experience in relevant fields and also will it be usefull for this job description."
-                    },
-                    "career_growth": {
-                        "type": "boolean",
-                        "description": "Indicates if the candidate has demonstrated career growth."
-                    }
-                    },
-                    "required": [
-                    "total_years_experience",
-                    "career_growth"
-                    ],
-                    "additionalProperties": False
+                    "description": ""
                 },
-                "cultural_fit_and_personality_traits": {
+                "job_history_experience": {
                     "type": "object",
-                    "properties": {
-                    "alignment_with_company_values": {
-                        "type": "boolean",
-                        "description": "Summary of whether the candidate's personality traits align with the company's culture."
-                    },
-                    "leadership_potential": {
-                        "type": "boolean",
-                        "description": "Indicates if there are indications of leadership potential in the candidate."
-                    }
-                    },
-                    "required": [
-                    "alignment_with_company_values",
-                    "leadership_potential"
-                    ],
-                    "additionalProperties": False
+                    "description": ""
                 },
-                "quantifiable_achievements_and_results": {
-                    "type": "array",
-                    "description": "Summary of quantifiable achievements that demonstrate candidate's impact.",
-                    "items": {
-                    "type": "string"
-                    }
-                },
-                "education_and_certifications": {
+                "Education_Qualification": {
                     "type": "object",
-                    "properties": {
-                    "highest_degree": {
-                        "type": "string",
-                        "description": "The highest educational qualification of the candidate."
-                    },
-                    "certifications": {
-                        "type": "array",
-                        "description": "Summary of relevant certifications obtained by the candidate that match with the job description.",
-                        "items": {
-                        "type": "string"
-                        }
-                    }
-                    },
-                    "required": [
-                    "highest_degree",
-                    "certifications"
-                    ],
-                    "additionalProperties": False
+                    "description": ""
+                },
+                "Keyword_Matching": {
+                    "type": "object",
+                    "descrtiption": ""               
+                },
+                "Strngth_Weakness": {
+                    "type": "object",
+                    "descrtiption": "" 
+                },"AI_Perspective": {
+                    "type": "object",
+                    "descrtiption": ""  
                 }
-                },
-                "required": [
-                "skills_match",
-                "experience_and_career_progression",
-                "cultural_fit_and_personality_traits",
-                "quantifiable_achievements_and_results",
-                "education_and_certifications"
-                ],
-                "additionalProperties": False
+            },
+            "required": [
+                "candidate_summary",
+                "skills_matching",
+                "job_history_experience",
+                "Education_Qualification",
+                "Keyword_Matching",
+                "Strngth_Weakness",
+                "AI_Perspective"
+            ],
+            "additionalProperties": False
             }
             }
         },
