@@ -6,6 +6,7 @@ def get_openai_client():
 def analyze_resume(resume_text, job_description):
     client = get_openai_client()
     prompt = f"""  
+    Always print output in provided json schema format only.
     ### Task:
     Analyze the provided candidate resume against the given job description. Extract key insights and generate a structured report with the following details:
 
