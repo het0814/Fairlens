@@ -35,7 +35,7 @@ def resume_analyzer():
             analysis = analyze_resume(resume_text, job_description)
             score = score_resume(resume_text,job_description)
             donut_analysis = donut_score_resume(resume_text,job_description)
-
+            
             # Generate charts
             charts = generate_resume_charts(score, donut_analysis)
 
