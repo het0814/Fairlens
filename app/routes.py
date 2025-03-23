@@ -1,11 +1,12 @@
 import uuid
-from flask import Blueprint, jsonify, render_template, redirect, url_for, flash,request
+from flask import Blueprint, jsonify, render_template, redirect, url_for, flash,request,send_file
 from app.forms import LoginForm,SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
 from datetime import datetime
-import concurrent.futures
+import os
 from app.AI_services import *
 from app.db_services import *
 from app.DG_services import *
+from app.Chart_Generator_services import*
 
 import boto3
 from botocore.exceptions import ClientError
@@ -194,16 +195,32 @@ def analyze_resume(job_id):
             flash("Job description is required", "error")
             return render_template("analyze_resumes.html",form=form,job=job,message='no job')
 
-        analyses = []
+        analysis = []
 
         for resume_file in uploaded_files:
             file_path = os.path.join("uploads", resume_file.filename)
             resume_file.save(file_path)
-            resume_text=extract_text(file_path,resume_file.filename)
-            analysis = analyze_resume_service(resume_text, job_description)
-            analyses.append({"file_name": resume_file.filename, "analysis": analysis})
 
-        return render_template("resume_analysis_result.html", analyses=analyses, job_info=job)
+            resume_text=extract_text(file_path,resume_file.filename)
+            
+            # Perform analysis
+            resume_analysis = analyze_resume_service(resume_text, job_description)
+            score = score_resume(resume_text,job_description)
+            donut_analysis = donut_score_resume(resume_text,job_description)
+
+            # Generate charts
+            charts = generate_resume_charts(score, donut_analysis)
+
+            analysis.append({
+                "file_name": resume_file.filename, 
+                "analysis": resume_analysis, 
+                "score": score,
+                "donut_analysis": donut_analysis,
+                "charts": charts
+            })
+    
+
+        return render_template("resume_analysis_result.html", analyses=analysis, job_info=job)
     return render_template("analyze_resume.html", form=form,job=job)
     #     ranked_results = sorted(results, key=lambda x: x["total_score"], reverse=True)
     #     for idx, result in enumerate(ranked_results):
@@ -227,3 +244,22 @@ def analyze_resume(job_id):
 
     # return render_template("analyze_resume.html", form=form,job=job,top_applicants=top_applicants, ranked_results=ranked_results)
   
+@main.route('/download_chart', methods=['POST'])
+def download_chart():
+    import base64
+    chart_data = request.form.get('chart_data')
+    chart_type = request.form.get('chart_type')
+    
+    # Decode base64 image
+    image_data = base64.b64decode(chart_data)
+    
+    # Create a file-like object
+    image_stream = io.BytesIO(image_data)
+    
+    # Send the file for download
+    return send_file(
+        image_stream, 
+        mimetype='image/png', 
+        as_attachment=True, 
+        download_name=f'{chart_type}_chart.png'
+    )  

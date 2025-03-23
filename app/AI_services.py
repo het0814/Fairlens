@@ -1,188 +1,9 @@
-from langchain_community.document_loaders import PDFMinerLoader
-from huggingface_hub import InferenceClient
-import os
-import json
-from math import pi
-import matplotlib
-matplotlib.use('Agg') 
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
-import re 
-
 import fitz
 import docx
-import openai
+from openai import OpenAI
 
 
-OPENAI_API_KEY = "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"
-# client = InferenceClient(api_key="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")
-
-# def langchain_document_loader(file_path):
-#     if not file_path.endswith(".pdf"):
-#         return [], []
-
-#     loader = PDFMinerLoader(file_path=file_path)
-#     documents = loader.load_and_split()
-
-#     for i in range(len(documents)):
-#         documents[i].metadata = {
-#             "source": documents[i].metadata["source"],
-#             "doc_number": i,
-#         }
-
-#     gender_words = ['male', 'female', 'transgender', 'lgbtq', 'minority', 'disability']
-#     gender_found = []
-#     gender_pattern = r'\b(?:' + '|'.join([re.escape(word) for word in gender_words]) + r')\b'
-
-#     for document in documents:
-#         text = document.page_content.lower()
-#         matches = re.findall(gender_pattern, text, flags=re.IGNORECASE)
-
-#         for gender in gender_words:
-#             if gender in matches and gender not in gender_found:
-#                 gender_found.append(gender)
-
-#     return documents, gender_found
-
-# def Model(prompt):
-#     Model_result = ""
-#     for message in client.chat_completion(
-#         model="meta-llama/Llama-3.2-3B-Instruct",
-#         messages=[{"role": "user", "content": prompt}],
-#         max_tokens=500,
-#         stream=True
-#     ):
-#         Model_result += message.choices[0].delta.content
-#     return Model_result
-
-# def chunk_text(text, max_tokens=4096):
-#     tokens = text.split()
-#     chunks = []
-#     current_chunk = []
-#     current_token_count = 0
-
-#     for token in tokens:
-#         token_length = len(token.split())
-#         if current_token_count + token_length > max_tokens:
-#             chunks.append(" ".join(current_chunk))
-#             current_chunk = [token]
-#             current_token_count = token_length
-#         else:
-#             current_chunk.append(token)
-#             current_token_count += token_length
-
-#     if current_chunk:
-#         chunks.append(" ".join(current_chunk))
-
-#     return chunks
-
-# def process_resume(resume_text, job_description):
-#     chunks = chunk_text(resume_text)
-#     final_response = ""
-
-#     for chunk in chunks:
-#         prompt = feature_match_function(chunk, job_description)
-#         chunk_result = Model(prompt)
-#         final_response += chunk_result
-
-#     return final_response
-
-# def feature_match_function(resume_text, job_offer):
-#     prompt = f"""
-#     You are an AI assistant specialized in resume analysis and recruitment. Analyze the given resume and compare it with the provided job description. Provide insights, feedback, and recommendations for the recruiter or HR manager. Your response should follow the example structure below.
-#         Step-1:
-#         **EXAMPLE RESPONSE STRUCTURE:** 
-#         **DETAILED ANALYSIS**:
-#         1. **Overall Match Percentage**: Provide a percentage score that reflects how well the resume aligns with the job description (considering skills, experience, and qualifications).
-#         2. **Matching Skills**: List the skills mentioned in the job description that are found in the resume.
-#         3. **Missing Skills**: List the skills from the job description that are not reflected in the resume.
-#         4. **Experience Relevance**: Analyze how the candidate’s experience aligns with the job description requirements.
-#         5. **Education/Qualifications Fit**: Evaluate whether the educational background or certifications match the job’s requirements.
-
-#         Step-2:
-#         Provide the output:
-#         1.**---**: A JSON format detailing the identified matches and their scores in each category using the template below. Ensure that the JSON format is strictly followed to avoid parsing errors:
-#             {{
-#             "Soft skills": <soft_skills_score>,
-#             "Hard skills": <hard_skills_score>,
-#             "Experience": <experience_score>,
-#             "Education and certifications": <education_and_certifications_score>,
-#             "Keywords": <keywords_score>
-#             }}
-
-#     Resume Text: {resume_text}
-#     Job Description: {job_offer}
-#     """
-#     return prompt
-
-# def match_report(match_answer):
-#     def extract_text_analysis(match_answer):
-#         if "{" not in match_answer or "}" not in match_answer:
-#             raise ValueError("Parsing error: JSON format not found.")
-#         json_start = match_answer.index("{")
-#         json_end = match_answer.rindex("}") + 1
-#         json_part = match_answer[json_start:json_end]
-#         text_analysis = match_answer[:json_start].strip()
-#         scores_dict = json.loads(json_part)
-#         return text_analysis, scores_dict
-
-#     def create_radar_chart(scores_dict):
-#         fixed_labels = ["Soft skills", "Hard skills", "Experience", "Education and certifications", "Keywords"]
-#         scores = [scores_dict.get(label, 0) for label in fixed_labels]
-        
-#         num_vars = len(fixed_labels)
-#         angles = [n / float(num_vars) * 2 * pi for n in range(num_vars)]
-#         angles += angles[:1]
-        
-#         scores += scores[:1]
-        
-#         fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-#         ax.plot(angles, scores, linewidth=2, linestyle='solid')
-#         ax.fill(angles, scores, 'r', alpha=0.1)
-#         plt.xticks(angles[:-1], fixed_labels)
-#         ax.set_rlabel_position(0)
-#         plt.yticks([20, 40, 60, 80, 100], ["20", "40", "60", "80", "100"], color="grey", size=7)
-#         plt.ylim(0, 100)
-#         return fig
-
-#     text_analysis, scores_dict = extract_text_analysis(match_answer)
-#     fig = create_radar_chart(scores_dict)
-#     return text_analysis, fig, scores_dict
-
-# def resume_screening(resume_text, job_description_text):
-#     match_answer = process_resume(resume_text, job_description_text)
-#     try:
-#         text_analysis, fig, scores_dict = match_report(match_answer)
-#         buffer = BytesIO()
-#         fig.savefig(buffer, format="png")
-#         buffer.seek(0)
-#         image_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
-#         buffer.close()
-#     except Exception as e:
-#         return {"error": f"Failed to process match report: {str(e)}"}
-#     return {
-#         "text_analysis": text_analysis,
-#         "scores_dict": scores_dict,
-#         "radar_chart": image_base64
-#     }
-
-# def process_single_resume(resume_file, job_description):
-#     if resume_file and resume_file.filename.endswith(".pdf"):
-#         resume_path = os.path.join('uploads', resume_file.filename)
-#         resume_file.save(resume_path)
-
-#         resume_documents, gender_found = langchain_document_loader(resume_path)
-#         resume_text = " ".join([doc.page_content for doc in resume_documents])
-
-#         result = resume_screening(resume_text, job_description)
-#         result["resume_filename"] = resume_file.filename
-#         result["gender_found"] = gender_found
-
-#         result["total_score"] = sum(result["scores_dict"].values())
-#         return result
-#     return None
-
+OPENAI_API_KEY = "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"
 
 # Function to extract text from PDF and DOCX
 def extract_text(file_path,file_name):
@@ -196,27 +17,324 @@ def extract_text(file_path,file_name):
         doc = docx.Document(file_path)
         return "\n".join([para.text for para in doc.paragraphs])
 
-def model_inference(messages):
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=messages,
-        api_key=OPENAI_API_KEY
-    )
-    return response
+# def model_inference(messages):
+#     response = openai.ChatCompletion.create(
+#         model="gpt-4o-mini",
+#         messages=messages,
+#         api_key=OPENAI_API_KEY
+#     )
+#     return response
     
+# def analyze_resume_service(resume_text, job_description):
+#     prompt = f"""
+#     Your Role is to Compare the following resume against the job description and provide feedback:
+    
+#     **Job Description:**
+#     {job_description}
+    
+#     **Resume:**
+#     {resume_text}
+    
+#     Identify missing skills, relevant experience, and suggestions for improvement.
+#     """
+#     messages=[{"role": "system", "content": "You are a professional resume evaluator.Provide missing skills, relevant experience, and suggestions for improvement"},
+#                   {"role": "user", "content": prompt}]
+#     response=model_inference(messages)
+#     return response["choices"][0]["message"]["content"]
+
 def analyze_resume_service(resume_text, job_description):
-    prompt = f"""
-    Your Role is to Compare the following resume against the job description and provide feedback:
-    
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    prompt = f"""  
+    Always print output in provided json schema format only.
+    ### Task:
+    Analyze the provided candidate resume against the given job description. Extract key insights and generate a structured report with the following details:
+
+    Here are the Candidate Information and Job Description:
     **Job Description:**
     {job_description}
-    
+
     **Resume:**
     {resume_text}
-    
-    Identify missing skills, relevant experience, and suggestions for improvement.
+    ---
+
+    ### **1. Candidate Summary**
+    Provide a concise summary of the candidate’s professional background, highlighting:
+    - Primary industry or domain of expertise.
+    - Years of experience.
+    - Key competencies and strengths.
+    - Notable achievements or recognitions.
+    - Overall career trajectory.
+
+    ---
+
+    ### **2. Skills Matching**
+    Evaluate how well the candidate’s skills align with the job description by identifying and categorizing:
+    - **Hard Skills**: Technical or specialized skills required for the role.
+    - **Soft Skills**: Interpersonal, communication, leadership, and teamwork abilities.
+    - **Skill Relevance**: Compare the required skills in the job description with the candidate's skills.
+    - **Skill Proficiency**: Assess the candidate’s level of expertise based on certifications, endorsements, or experience.
+
+    ---
+
+    ### **3. Job History & Experience**
+    Extract and analyze the candidate’s work experience:
+    - **Job Titles & Experience**: List job titles held, along with years of experience in each role.
+    - **Responsibilities & Achievements**: Provide an overview of responsibilities, accomplishments, and major contributions in previous roles.
+    - **Company Information**: Extract details about previous employers, including industry, company size, and market reputation.
+
+    ---
+
+    ### **4. Education & Qualifications**
+    Assess the candidate’s educational background and certifications:
+    - **Degrees & Institutions**: Extract the highest level of education attained, major field of study, and university attended.
+    - **Relevant Certifications**: Identify any professional certifications or training that align with job requirements.
+    - **Level of Study Relevance**: Determine whether the candidate’s education matches the required qualification level.
+
+    ---
+
+    ### **5. Keyword Matching**
+    Perform keyword extraction and relevance analysis:
+    - Identify key terms from the **job description** (skills, tools, qualifications, required experience).
+    - Extract matching terms from the **candidate’s resume**.
+    - Highlight any **gaps** in required vs. existing skills.
+
+    ---
+
+    ### **6. Strengths & Weaknesses Analysis**
+    Provide a structured assessment of the candidate’s strengths and potential weaknesses:
+    - **Strengths**: Key areas where the candidate excels based on qualifications, skills, or experience.
+    - **Weaknesses**: Any missing skills, gaps in experience, or areas where improvement is needed.
+
+    ---
+
+    ### **7. AI’s Perspective on Job Fit**
+    Deliver an AI-driven assessment of how well the candidate matches the job description:
+    - Provide a **suitability rating** (e.g., Strong Fit, Moderate Fit, Weak Fit).
+    - Justify the rating based on identified strengths, weaknesses, and overall alignment with the job requirements.
+    - Suggest whether the candidate should be shortlisted for further review.
+    ---
+    Ensure that the analysis is **accurate, structured, and relevant** to the job description.
     """
-    messages=[{"role": "system", "content": "You are a professional resume evaluator.Provide missing skills, relevant experience, and suggestions for improvement"},
-                  {"role": "user", "content": prompt}]
-    response=model_inference(messages)
-    return response["choices"][0]["message"]["content"]
+    response = client.chat.completions.create(
+        model='gpt-4o-mini',
+        messages=[
+            {
+                "role": "system",
+                "content": "Analyze the resume based on the following criteria."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "resume_analysis",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "candidate_summary": {
+                            "type": "string",
+                            "description": "Provide a concise summary of the candidate’s professional background."
+                        },
+                        "skills_matching": {
+                            "type": "string",
+                            "description": "Evaluate how well the candidate’s skills align with the job description by identifying and categorizing."
+                        },
+                        "job_history_experience": {
+                            "type": "string",
+                            "description": "Extract and analyze the candidate’s work experience."
+                        },
+                        "education_qualification": {
+                            "type": "string",
+                            "description": "Assess the candidate’s educational background and certifications."
+                        },
+                        "keyword_matching": {
+                            "type": "string",
+                            "description": "Perform keyword extraction and relevance analysis."
+                        },
+                        "strength_weakness": {
+                            "type": "string",
+                            "description": "Provide a structured assessment of the candidate’s strengths and potential weaknesses."
+                        },
+                        "ai_view": {
+                            "type": "string",
+                            "description": "Deliver an AI-driven assessment of how well the candidate matches the job description."
+                        }
+                    },
+                    "required": [
+                        "candidate_summary",
+                        "skills_matching",
+                        "job_history_experience",
+                        "education_qualification",
+                        "keyword_matching",
+                        "strength_weakness",
+                        "ai_view"
+                    ],
+                    "additionalProperties": False
+                }
+            }
+        },
+        temperature=1,
+        max_completion_tokens=2048,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+    )
+
+    return response.choices[0].message.content
+
+
+def score_resume(resume_text,job_description):
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    prompt = f"""  
+    **Job Description:**
+    {job_description}
+
+    **Resume:**
+    {resume_text}
+    """
+    response = client.chat.completions.create(
+        model='gpt-4o-mini',
+        messages=[
+            {
+            "role": "system",
+            "content": [
+                {
+                "type": "text",
+                "text": "Analyze the following resume analyisis and provide scores out of 100"           
+                }
+            ]
+            },
+            {
+            "role": "user",
+            "content": [
+                {
+                "type": "text",
+                "text": prompt}
+            ]
+            }
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+            "name": "resume_score",
+            "strict": True,
+            "schema": {
+                "type": "object",
+            "properties": {
+                "skills_and_qualifications": {
+                    "type": "number",
+                    "description": "Score (out of 100) assessing technical skills, certifications, and educational background."
+                },
+                "experience_and_past_performance": {
+                    "type": "number",
+                    "description": "Score (out of 100) evaluating work history, industry experience, and achievements."
+                },
+                "cultural_fit_and_soft_skills": {
+                    "type": "number",
+                    "description": "Score (out of 100) analyzing communication, teamwork, problem-solving, and alignment with company values."
+                },
+                "adaptability_and_learning_ability": {
+                    "type": "number",
+                    "description": "Score (out of 100) measuring ability to handle change, learn new skills, and adapt to new environments or technologies."
+                }
+            },
+            "required": [
+                "skills_and_qualifications",
+                "experience_and_past_performance",
+                "cultural_fit_and_soft_skills",
+                "adaptability_and_learning_ability"
+            ],
+            "additionalProperties": False
+            }
+            }
+        },
+        temperature=1,
+        max_completion_tokens=2048,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        )
+    return response.choices[0].message.content
+
+def donut_score_resume(resume_text,job_description):
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    prompt =f"""  
+    **Job Description:**
+    {job_description}
+
+    **Resume:**
+    {resume_text}
+    """
+    response = client.chat.completions.create(
+        model='gpt-4o-mini',
+        messages=[
+            {
+            "role": "system",
+            "content": [
+                {
+                "type": "text",
+                "text": "Analyze the following resume analyisis and provide scores out of 100"           
+                }
+            ]
+            },
+            {
+            "role": "user",
+            "content": [
+                {
+                "type": "text",
+                "text": prompt}
+            ]
+            }
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+            "name": "resume_score",
+            "strict": True,
+            "schema": {
+                "type": "object",
+            "properties": {
+                "Technical_Skills_Proficiency": {
+                    "type": "number",
+                    "description": "Score (out of 100) assessing technical skills, certifications, and educational background."
+                },
+                "Experience_Level_Distribution": {
+                    "type": "number",
+                    "description": "Score (out of 100) evaluating work history, industry experience, and achievements."
+                },
+                "Work_Location_Flexibility": {
+                    "type": "number",
+                    "description": "Score (out of 100) analyzing communication, teamwork, problem-solving, and alignment with company values."
+                },
+                "Keywords_and_Phrases_Match": {
+                    "type": "number",
+                    "description": "Score (out of 100) measuring ability to handle change, learn new skills, and adapt to new environments or technologies."
+                },
+                "Location_Test": {
+                    "type": "number",
+                    "description": "Score (out of 100) measuring ability to handle change, learn new skills, and adapt to new environments or technologies."
+                },
+            },
+            "required": [
+                "Technical_Skills_Proficiency",
+                "Experience_Level_Distribution",
+                "Work_Location_Flexibility",
+                "Keywords_and_Phrases_Match",
+                "Location_Test"
+            ],
+            "additionalProperties": False
+            }
+            }
+        },
+        temperature=1,
+        max_completion_tokens=2048,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        )
+    return response.choices[0].message.content
+
