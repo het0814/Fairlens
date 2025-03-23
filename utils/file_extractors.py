@@ -1,4 +1,5 @@
-import fitz  # PyMuPDF for PDF extraction
+# use pip install presidio-analyzer presidio-anonymizer to install the required packages
+import fitz  
 import docx
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
