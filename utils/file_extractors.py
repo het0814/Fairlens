@@ -7,47 +7,39 @@ from presidio_anonymizer import AnonymizerEngine
 analyzer = AnalyzerEngine()
 anonymizer = AnonymizerEngine()
 
-def extract_text(file_path):
-    """Extracts text from PDF or DOCX files."""
+def extract_text_from_pdf(pdf_path):
+    """Extracts text from a PDF file."""
     text = ""
-
-    # Handle PDF files
-    if file_path.endswith(".pdf"):
-        with fitz.open(file_path) as doc:
-            for page in doc:
-                text += page.get_text()
-
-    # Handle DOCX files
-    elif file_path.endswith(".docx"):
-        doc = docx.Document(file_path)
-        text = "\n".join([para.text for para in doc.paragraphs])
-
-    else:
-        print(f"Unsupported file format: {file_path}")
-    
+    with fitz.open(pdf_path) as doc:
+        for page in doc:
+            text += page.get_text()
     return text
 
+def extract_text_from_docx(docx_path):
+    """Extracts text from a DOCX file."""
+    doc = docx.Document(docx_path)
+    return "\n".join([para.text for para in doc.paragraphs])
+
 def redact_pii(text):
-    """Redacts PII using Presidio."""
-    # Analyze text for PII entities
-    results = analyzer.analyze(text=text, entities=[
-        "PHONE_NUMBER", "EMAIL_ADDRESS",
-    ], language='en')
-
-    # Anonymize detected PII (no need for explicit config)
+    """Redacts PII (phone numbers and email addresses) using Presidio."""
+    # Analyze text for PII entities (phone numbers and emails)
+    results = analyzer.analyze(text=text, entities=["PHONE_NUMBER", "EMAIL_ADDRESS"], language='en')
+    
+    # Anonymize detected PII entities
     redacted_text = anonymizer.anonymize(text, results).text
-
+    
     return redacted_text
 
-def process_file(file_path):
-    """Processes a PDF or DOCX file, extracts text, and redacts PII."""
-    # Extract text from the file
-    text = extract_text(file_path)
+def get_file_text(file_path):
+    """Extracts text from a file and redacts any PII."""
+    if file_path.endswith(".pdf"):
+        text = extract_text_from_pdf(file_path)
+    elif file_path.endswith(".docx"):
+        text = extract_text_from_docx(file_path)
+    else:
+        return ""  # If file is not PDF or DOCX, return empty string
     
-    if not text.strip():
-        return "No valid content extracted."
-
-    # Redact PII
+    # Redact PII from the extracted text
     redacted_text = redact_pii(text)
     
     return redacted_text
