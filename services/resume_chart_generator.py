@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import io
 import base64
+import matplotlib
+import os
+matplotlib.use('Agg')  # Use non-GUI backend
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+
 
 def parse_resume_score(score_json_str):
     try:
