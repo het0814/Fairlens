@@ -24,6 +24,11 @@
         <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
             <h2 class="text-2xl font-bold mb-4">Analysis for {{ item.file_name }}</h2>
             
+            <!-- Rank Section -->
+            <div class="mb-4">
+                <h4 class="text-xl font-semibold">Rank: {{ item.average_value }}</h4>
+            </div>
+
             <!-- Analysis Details -->
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Text Analysis Section -->
@@ -31,7 +36,7 @@
                     <h3 class="text-xl font-semibold mb-4">Resume Analysis</h3>
                     <p> 
 {{ item.analysis }}
-                    </p>>
+                    </p>
                 </div>
 
                 <!-- Score Analysis Section -->
