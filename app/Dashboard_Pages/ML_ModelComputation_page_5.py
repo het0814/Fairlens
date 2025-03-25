@@ -7,9 +7,12 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVR
 from sklearn.preprocessing import StandardScaler
 
+def load_local_company_data():
+    return pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
+
 def get_predicted_attrition_by_years():
 
-    df = pd.read_csv(r'app\Dashboard_Pages\synthetic_dataset.csv')
+    df = load_local_company_data().copy()
 
     if 'Attrition' not in df.columns:
         raise ValueError("Column 'Attrition' is missing from the dataset.")
@@ -42,7 +45,7 @@ def get_predicted_attrition_by_years():
 
 def get_gender_diversity_predictions():
 
-    df = pd.read_csv(r'app\Dashboard_Pages\synthetic_dataset.csv')
+    df = load_local_company_data().copy()
 
     if 'DateofHire' not in df.columns or 'Sex' not in df.columns:
         raise ValueError("Required columns 'DateofHire' or 'Sex' are missing.")
@@ -86,7 +89,7 @@ def get_gender_diversity_predictions():
     return gender_trends, predictions
    
 def get_diversity_predictions():
-    df = pd.read_csv(r'app\Dashboard_Pages\synthetic_dataset.csv')
+    df = load_local_company_data().copy()
 
     df['DateofHire'] = pd.to_datetime(df['DateofHire'])
     df['Year'] = df['DateofHire'].dt.year
@@ -148,14 +151,14 @@ def get_diversity_predictions():
     return all_data
 
 def get_preformance_predictions():
-    data = pd.read_csv(r'app\Dashboard_Pages\synthetic_dataset.csv')
+    df = load_local_company_data().copy()
     features = ['YearsAtCompany', 'YearsInCurrentRole', 'YearsSinceLastPromotion', 
                 'JobSatisfaction', 'JobInvolvement', 'WorkLifeBalance', 
                 'PayRate', 'PercentSalaryHike']
     target = 'PerformanceRating'
 
-    X = data[features]  
-    y = data[target]   
+    X = df[features]  
+    y = df[target]   
 
     X = X.fillna(X.median())
 

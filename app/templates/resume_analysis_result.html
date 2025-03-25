@@ -133,12 +133,6 @@
                             <img src="data:image/png;base64,{{ item.charts.scoring_radar_chart }}" 
                                 alt="Scoring Radar Chart" 
                                 class="w-full h-auto rounded-lg mb-4">
-                            <div class="flex justify-center">
-                                <button onclick="downloadChart('{{ item.charts.scoring_radar_chart }}', 'scoring_radar_{{ item.file_name }}')" 
-                                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Download Scoring Radar Chart
-                                </button>
-                            </div>
                         </div>
                         {% endif %}
 
@@ -155,12 +149,6 @@
                                     <img src="data:image/png;base64,{{ chart }}" 
                                         alt="{{ category }} Donut Chart" 
                                         class="w-full h-auto rounded-lg mb-3">
-                                    <div class="flex justify-center">
-                                        <button onclick="downloadChart('{{ chart }}', '{{ category }}_{{ item.file_name }}')" 
-                                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm">
-                                            Download
-                                        </button>
-                                    </div>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -176,30 +164,5 @@
             <a href="/job-management" class="button-secondary">🔄 Analyze Another Resume</a>
         </div>
     </div>
-    <script>
-        function downloadChart(chartData, chartName) {
-            // Create a form to submit the chart data
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/resume_analyzer/download_chart';
-
-            // Create hidden inputs for chart data and type
-            const chartDataInput = document.createElement('input');
-            chartDataInput.type = 'hidden';
-            chartDataInput.name = 'chart_data';
-            chartDataInput.value = chartData;
-
-            const chartTypeInput = document.createElement('input');
-            chartTypeInput.type = 'hidden';
-            chartTypeInput.name = 'chart_type';
-            chartTypeInput.value = chartName;
-
-            // Append inputs to form and submit
-            form.appendChild(chartDataInput);
-            form.appendChild(chartTypeInput);
-            document.body.appendChild(form);
-            form.submit();
-        }
-    </script>
 </body>
 </html>

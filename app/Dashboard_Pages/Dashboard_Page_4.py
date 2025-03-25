@@ -4,21 +4,25 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 
-df = pd.read_csv(r"app\Dashboard_Pages\synthetic_dataset.csv")
+def load_local_company_data():
 
-hiring_source_data = df.groupby('RecruitmentSource').size().reset_index(name='Count')
+    df = pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
 
-training_data = df.groupby('Department')['TrainingTimesLastYear'].sum().reset_index(name='Total Training Times')
+    hiring_source_data = df.groupby('RecruitmentSource').size().reset_index(name='Count')
 
-df_training_performance = df[['TrainingTimesLastYear', 'PerformanceRating']].dropna()
-df_training_performance['TrainingTimesLastYear'] = pd.to_numeric(df_training_performance['TrainingTimesLastYear'], errors='coerce')
-df_training_performance['PerformanceRating'] = pd.to_numeric(df_training_performance['PerformanceRating'], errors='coerce')
+    training_data = df.groupby('Department')['TrainingTimesLastYear'].sum().reset_index(name='Total Training Times')
 
-df['YearsWithCurrManager'] = pd.to_numeric(df['YearsWithCurrManager'], errors='coerce')
-df = df.dropna(subset=['YearsWithCurrManager'])
+    df_training_performance = df[['TrainingTimesLastYear', 'PerformanceRating']].dropna()
+    df_training_performance['TrainingTimesLastYear'] = pd.to_numeric(df_training_performance['TrainingTimesLastYear'], errors='coerce')
+    df_training_performance['PerformanceRating'] = pd.to_numeric(df_training_performance['PerformanceRating'], errors='coerce')
 
-avg_training_data = df.groupby('Department')['TrainingTimesLastYear'].mean().reset_index(name='Average Training Times')
+    df['YearsWithCurrManager'] = pd.to_numeric(df['YearsWithCurrManager'], errors='coerce')
+    df = df.dropna(subset=['YearsWithCurrManager'])
 
+    avg_training_data = df.groupby('Department')['TrainingTimesLastYear'].mean().reset_index(name='Average Training Times')
+    
+    return hiring_source_data, avg_training_data, df_training_performance, df
+ 
 # def get_layout():
 
 #     layout=html.Div([
@@ -52,6 +56,7 @@ def register_callbacks(app):
         Input('hiring-source-bar-chart', 'id')  # Triggered when the chart is loaded
     )
     def update_hiring_source_chart(_):
+        hiring_source_data, _, _, _ = load_local_company_data()
         fig = px.bar(
             hiring_source_data,
             x='Count',
@@ -74,6 +79,7 @@ def register_callbacks(app):
         Input('average-training-bar-chart', 'id')  # Triggered when the chart is loaded
     )
     def update_average_training_frequency_chart(_):
+        _, avg_training_data, _, _ = load_local_company_data()
         fig = px.bar(
             avg_training_data,
             x='Department',
@@ -95,6 +101,7 @@ def register_callbacks(app):
         Input('training-performance-bar-chart', 'id')  # Triggered when the chart is loaded
     )
     def update_training_performance_chart(_):
+        _, _, df_training_performance, _ = load_local_company_data()
         # Group by training times and calculate the average performance rating
         df_avg_performance = df_training_performance.groupby('TrainingTimesLastYear')['PerformanceRating'].mean().reset_index()
 
@@ -120,6 +127,7 @@ def register_callbacks(app):
         Input('years-with-manager-histogram', 'id')  # Triggered when the chart is loaded
     )
     def update_years_with_manager_histogram(_):
+        _, _, _, df = load_local_company_data()
         fig = px.histogram(
             df,
             x='YearsWithCurrManager',

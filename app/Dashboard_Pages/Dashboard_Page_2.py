@@ -4,15 +4,16 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
+def load_local_company_data() :
+    df = pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
 
-hr_data = pd.read_csv(r"app\Dashboard_Pages\synthetic_dataset.csv")
 
-app = dash.Dash(__name__)
-
-job_satisfaction_involvement = hr_data.groupby("JobInvolvement")["JobSatisfaction"].mean()
-department_satisfaction = hr_data.groupby("Department")[["JobSatisfaction", "WorkLifeBalance"]].mean()
-overtime_satisfaction = hr_data.groupby(["OverTime", "PerformanceRating"])["JobSatisfaction"].mean().unstack()
-overtime_performance_count = hr_data.groupby(["OverTime", "PerformanceRating"])["EmpID"].count().unstack()
+    job_satisfaction_involvement = df.groupby("JobInvolvement")["JobSatisfaction"].mean()
+    department_satisfaction = df.groupby("Department")[["JobSatisfaction", "WorkLifeBalance"]].mean()
+    overtime_satisfaction = df.groupby(["OverTime", "PerformanceRating"])["JobSatisfaction"].mean().unstack()
+    overtime_performance_count = df.groupby(["OverTime", "PerformanceRating"])["EmpID"].count().unstack()
+    
+    return job_satisfaction_involvement, department_satisfaction, overtime_satisfaction, overtime_performance_count
 
 
 # def get_layout():
@@ -61,6 +62,7 @@ def register_callbacks(app):
         Input("job-satisfaction-line-chart", "id")
     )
     def update_job_satisfaction_line_chart(_):
+        job_satisfaction_involvement, _, _, _ = load_local_company_data()
         fig = px.line(
             job_satisfaction_involvement, 
             x=job_satisfaction_involvement.index, 
@@ -75,6 +77,7 @@ def register_callbacks(app):
         [Input("metric-dropdown", "value")]
     )
     def update_satisfaction_pie_chart(selected_metric):
+        _, department_satisfaction, _, _ = load_local_company_data()
         fig = px.pie(
             department_satisfaction, 
             names=department_satisfaction.index, 
@@ -90,6 +93,8 @@ def register_callbacks(app):
         Input("overtime-satisfaction-bar-chart", "id")
     )
     def update_overtime_impact_charts(_):
+        _, _, overtime_satisfaction, overtime_performance_count = load_local_company_data()
+
         overtime_satisfaction_fig = px.bar(
             overtime_satisfaction,
             barmode="group",

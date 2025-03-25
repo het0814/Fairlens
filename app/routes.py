@@ -1,5 +1,5 @@
 import uuid
-from flask import Blueprint, jsonify, render_template, redirect, url_for, flash,request,send_file
+from flask import Blueprint, jsonify, render_template, redirect, url_for, flash,request, current_app, session
 from app.forms import LoginForm,SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
 from datetime import datetime
 import os
@@ -7,6 +7,7 @@ from app.AI_services import *
 from app.db_services import *
 from app.DG_services import *
 from app.Chart_Generator_services import*
+from app.s3_services import*
 
 import boto3
 from botocore.exceptions import ClientError
@@ -76,6 +77,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
+        session['username']=username
         password = form.password.data
 
         message, response = authenticate_user(username, password)
@@ -95,6 +97,7 @@ def signup():
         first_name = form.first_name.data
         last_name = form.last_name.data
         email = form.email.data
+        session['username']=email
         password = form.password.data
 
         message, response = sign_up_user(first_name, last_name, email, password)
@@ -110,10 +113,12 @@ def company_setup():
     form = CompanyProfileForm()
     if form.validate_on_submit():
         company_id = str(uuid.uuid4())
+        user_id=session.get('username')
+        link_Company_User(company_id,user_id)
         insert_company(company_id,form.company_name.data,form.industry_type.data,form.num_employees.data,form.street.data,form.city.data,form.province.data,form.postal_code.data,form.phone.data,form.email.data,form.website.data)
         if form.employee_data.data:
             file = form.employee_data.data
-            file.save(f"uploads/{file.filename}")
+            upload_CompanyData(company_id,file)
         flash('Company profile saved successfully!', 'success')
         return redirect(url_for('main.diversity_goal_setup', company_id=company_id))
     return render_template('company.html', form=form)
@@ -134,6 +139,14 @@ def diversity_goal_setup(company_id):
 
 @main.route('/home')
 def home():
+    company_id = get_company_by_userid(session.get('username'))
+    if company_id:
+        s3_file = get_CompanyData(company_id)
+        df = pd.read_csv(s3_file)
+        
+        # Save to local dummy file
+        data_path = os.path.join("app", "Dashboard_Pages", "data", "data.csv")
+        df.to_csv(data_path, index=False)
     return render_template('home.html')
 
 @main.route('/job-management')
@@ -200,6 +213,7 @@ def analyze_resume(job_id):
         for resume_file in uploaded_files:
             file_path = os.path.join("uploads", resume_file.filename)
             resume_file.save(file_path)
+            upload_Resume(job_id,resume_file,resume_file.filename)
 
             resume_text=extract_text(file_path,resume_file.filename)
             
@@ -243,23 +257,3 @@ def analyze_resume(job_id):
     #     return render_template("analyze_resume.html", form=form,job=job,top_applicants=top_applicants, ranked_results=ranked_results)
 
     # return render_template("analyze_resume.html", form=form,job=job,top_applicants=top_applicants, ranked_results=ranked_results)
-  
-@main.route('/download_chart', methods=['POST'])
-def download_chart():
-    import base64
-    chart_data = request.form.get('chart_data')
-    chart_type = request.form.get('chart_type')
-    
-    # Decode base64 image
-    image_data = base64.b64decode(chart_data)
-    
-    # Create a file-like object
-    image_stream = io.BytesIO(image_data)
-    
-    # Send the file for download
-    return send_file(
-        image_stream, 
-        mimetype='image/png', 
-        as_attachment=True, 
-        download_name=f'{chart_type}_chart.png'
-    )  

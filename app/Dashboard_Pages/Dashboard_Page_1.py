@@ -6,59 +6,62 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-df = pd.read_csv(r"app\Dashboard_Pages\synthetic_dataset.csv")
+def load_local_company_data():
 
-df['DistanceCategory'] = df['DistanceFromHome'].apply(
-    lambda x: 'Near' if 0 <= x <= 4 else
-              'Far' if 5 <= x <= 7 else
-              'Very Far' if 7 < x <= 10 else
-              'Out of Range'
-)
+    df = pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
 
-pie_data = df['DistanceCategory'].value_counts().reset_index()
-pie_data.columns = ['DistanceCategory', 'Count']
+    df['DistanceCategory'] = df['DistanceFromHome'].apply(
+        lambda x: 'Near' if 0 <= x <= 4 else
+                'Far' if 5 <= x <= 7 else
+                'Very Far' if 7 < x <= 10 else
+                'Out of Range'
+    )
 
-gender_ethnicity_data = df.groupby(['Sex', 'Ethnicity']).size().reset_index(name='Count')
-total_by_gender = gender_ethnicity_data.groupby('Sex')['Count'].transform('sum')
-gender_ethnicity_data['Percentage'] = (gender_ethnicity_data['Count'] / total_by_gender) * 100
+    pie_data = df['DistanceCategory'].value_counts().reset_index()
+    pie_data.columns = ['DistanceCategory', 'Count']
 
-disability_percentage = (df[df['Disability'] == 'Yes'].shape[0] / df.shape[0]) * 100
-lgbtq_percentage = (df[df['LGBTQ'] == 'Yes'].shape[0] / df.shape[0]) * 100
-minority_percentage = (df[df['Minority'] == 'Yes'].shape[0] / df.shape[0]) * 100
-veteran_percentage = (df[df['Veteran'] == 'Yes'].shape[0] / df.shape[0]) * 100
-diversity_metrics = pd.DataFrame({
-    'Diversity Group': ['Disability', 'LGBTQ', 'Minority', 'Veteran'],
-    'Percentage': [disability_percentage, lgbtq_percentage, minority_percentage, veteran_percentage]
-})
+    gender_ethnicity_data = df.groupby(['Sex', 'Ethnicity']).size().reset_index(name='Count')
+    total_by_gender = gender_ethnicity_data.groupby('Sex')['Count'].transform('sum')
+    gender_ethnicity_data['Percentage'] = (gender_ethnicity_data['Count'] / total_by_gender) * 100
 
-def create_age_bin(age):
-    if age <= 20:
-        return "Under 20"
-    elif age <= 25:
-        return "21-25"
-    elif age <= 30:
-        return "26-30"
-    elif age <= 35:
-        return "31-35"
-    elif age <= 40:
-        return "36-40"
-    elif age <= 45:
-        return "41-45"
-    elif age <= 50:
-        return "46-50"
-    else:
-        return "50+"
-df['Age_Bin'] = df['Age'].apply(create_age_bin)
+    disability_percentage = (df[df['Disability'] == 'Yes'].shape[0] / df.shape[0]) * 100
+    lgbtq_percentage = (df[df['LGBTQ'] == 'Yes'].shape[0] / df.shape[0]) * 100
+    minority_percentage = (df[df['Minority'] == 'Yes'].shape[0] / df.shape[0]) * 100
+    veteran_percentage = (df[df['Veteran'] == 'Yes'].shape[0] / df.shape[0]) * 100
+    diversity_metrics = pd.DataFrame({
+        'Diversity Group': ['Disability', 'LGBTQ', 'Minority', 'Veteran'],
+        'Percentage': [disability_percentage, lgbtq_percentage, minority_percentage, veteran_percentage]
+    })
 
-age_bin_counts = df['Age_Bin'].value_counts().reset_index()
-age_bin_counts.columns = ['Age_Bin', 'Total_Employees']
+    def create_age_bin(age):
+        if age <= 20:
+            return "Under 20"
+        elif age <= 25:
+            return "21-25"
+        elif age <= 30:
+            return "26-30"
+        elif age <= 35:
+            return "31-35"
+        elif age <= 40:
+            return "36-40"
+        elif age <= 45:
+            return "41-45"
+        elif age <= 50:
+            return "46-50"
+        else:
+            return "50+"
+    df['Age_Bin'] = df['Age'].apply(create_age_bin)
 
-total_employees = df['EmpID'].nunique()  
+    age_bin_counts = df['Age_Bin'].value_counts().reset_index()
+    age_bin_counts.columns = ['Age_Bin', 'Total_Employees']
 
-avg_pay_rate = round(df['PayRate'].mean(),2)
+    total_employees = df['EmpID'].nunique()  
 
-avg_age = round(df['Age'].mean(),2)
+    avg_pay_rate = round(df['PayRate'].mean(),2)
 
+    avg_age = round(df['Age'].mean(),2)
+    
+    return pie_data, gender_ethnicity_data, diversity_metrics, age_bin_counts
 
 
 
@@ -162,6 +165,7 @@ def register_callbacks(app):
         Input('donut-chart', 'id') 
     )
     def update_pie_chart(_):
+        pie_data, _, _, _ = load_local_company_data()
         fig = px.pie(
             pie_data,
             names='DistanceCategory',
@@ -176,6 +180,7 @@ def register_callbacks(app):
         [Input('bar-chart', 'id')] 
     )
     def update_stacked_bar_chart(_):
+        _, gender_ethnicity_data, _, _ = load_local_company_data()
         fig = px.bar(
             gender_ethnicity_data,
             x='Sex',
@@ -194,6 +199,7 @@ def register_callbacks(app):
         Input('diversity-bar-chart', 'id')  
     )
     def update_diversity_bar_chart(_):
+        _, _, diversity_metrics, _ = load_local_company_data()
         fig = px.bar(
             diversity_metrics,
             x='Diversity Group',
@@ -211,6 +217,7 @@ def register_callbacks(app):
         Input('age-bin-pie-chart', 'id')  
     )
     def update_pie_chart(_):
+        _, _, _, age_bin_counts = load_local_company_data()
         fig = px.pie(
             age_bin_counts,
             names='Age_Bin',

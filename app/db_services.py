@@ -1,4 +1,3 @@
-import boto3
 from flask import current_app
 
 def get_dynamodb():
@@ -169,3 +168,19 @@ def update_job(job_id, position=None, department_id=None, department_name=None, 
     )
     
     return response['Attributes']
+def link_Company_User(company_id,user_id):
+    table = get_dynamodb().Table('Companie-Users')
+    table.put_item(
+        Item={
+            'user_id': user_id,
+            'company_id': company_id
+        }
+    )
+def get_company_by_userid(user_id):
+    table = get_dynamodb().Table('Companie-Users')
+    response = table.scan(
+        FilterExpression="user_id = :user_id",
+        ExpressionAttributeValues={":user_id": user_id}
+    )
+    return response['Items'][0]["company_id"] if response['Items'] else None
+            

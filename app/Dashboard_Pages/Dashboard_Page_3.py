@@ -5,8 +5,8 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 
-
-df = pd.read_csv(r"app\Dashboard_Pages\synthetic_dataset.csv")
+def load_local_company_data():
+    return pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
 # def get_layout():
 #     layout= html.Div([
 #         html.H1("Salary and Tenure Analysis", style={'text-align': 'center'}),  
@@ -43,6 +43,7 @@ def register_callbacks(app):
         [Input('salary-distribution', 'id')]
     )
     def update_salary_distribution(_):
+        df=load_local_company_data()
         avg_salary_by_position = df.groupby("Position")["PayRate"].mean().reset_index()
 
         fig = px.bar(avg_salary_by_position, x="Position", y="PayRate", 
@@ -60,6 +61,7 @@ def register_callbacks(app):
         [Input('salary-hike-vs-performance', 'id')]
     )
     def update_salary_hike_vs_performance(_):
+        df=load_local_company_data()
         avg_salary_hike = df.groupby("PerformanceRating")["PercentSalaryHike"].mean().reset_index()
         fig = px.bar(avg_salary_hike, x="PerformanceRating", y="PercentSalaryHike", 
                     title="Average Salary Hike by Performance Rating",
@@ -74,6 +76,7 @@ def register_callbacks(app):
         [Input('years-at-company', 'id')]
     )
     def update_years_at_company_histogram(_):
+        df=load_local_company_data()
         fig = px.histogram(df, x="YearsAtCompany", title="Distribution of Years at Company",
                         labels={"YearsAtCompany": "Years at Company"}, nbins=20)
         return fig
@@ -83,6 +86,7 @@ def register_callbacks(app):
         [Input('attrition-by-department', 'id')]
     )
     def update_attrition_by_department(_):
+        df=load_local_company_data()
         fig = px.histogram(df, x="Department", color="Attrition", 
                         title="Attrition by Department",
                         labels={"Attrition": "Attrition Status", "Department": "Department"},
