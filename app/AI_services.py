@@ -1,4 +1,5 @@
 from openai import OpenAI
+import json
 
 
 OPENAI_API_KEY = "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"
@@ -324,3 +325,87 @@ def donut_score_resume(resume_text,job_description):
         )
     return response.choices[0].message.content
 
+def rank_resumes(resume_scores):
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    
+    prompt = f"""
+    ### Task:
+    Analyze and rank the provided resume scores based on a comprehensive evaluation.
+
+    ### Ranking Methodology:
+    1. Calculate an overall score by:
+       - Weighting each scoring parameter
+       - Considering the holistic performance across all dimensions
+    
+    2. Provide a detailed ranking with:
+       - Overall score out of 100
+       - Ranking position
+       - Brief justification for the ranking
+    
+    ### Resume Scores:
+    {list(resume_scores)}
+    """
+    
+    response = client.chat.completions.create(
+        model='gpt-4o-mini',
+        messages=[
+            {
+                "role": "system",
+                "content": "Analyze and rank the resume scores comprehensively."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "resume_ranking",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "ranked_resumes": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "resume_id": {
+                                        "type": "string",
+                                        "description": "Unique identifier for the resume"
+                                    },
+                                    "overall_score": {
+                                        "type": "number",
+                                        "description": "Calculated overall score out of 100"
+                                    },
+                                    "ranking": {
+                                        "type": "number",
+                                        "description": "Ranking position (1 being the highest)"
+                                    },
+                                    "ranking_justification": {
+                                        "type": "string",
+                                        "description": "Explanation for the ranking"
+                                    }
+                                },
+                                "required": [
+                                    "resume_id", 
+                                    "overall_score", 
+                                    "ranking", 
+                                    "ranking_justification"
+                                ]
+                            }
+                        }
+                    },
+                    "required": ["ranked_resumes"]
+                }
+            }
+        },
+        temperature=1,
+        max_completion_tokens=2048,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+    )
+    
+    return response.choices[0].message.content

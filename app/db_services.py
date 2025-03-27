@@ -184,12 +184,13 @@ def get_company_by_userid(user_id):
     )
     return response['Items'][0]["company_id"] if response['Items'] else None
 
-def insert_analysis(user_id,job_id,file_name,analysis):
+def insert_analysis(user_id,resume_id,job_id,file_name,analysis):
     table = get_dynamodb().Table('ResumeAnalysis')
     table.put_item(
         Item={
-            'user_id':user_id,
-            'job_id': job_id,
+            'user_id': user_id,
+            'resume_id': resume_id,
+            'job_id': job_id, 
             'filename': file_name,
             'analysis': analysis
         }

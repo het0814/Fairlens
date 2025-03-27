@@ -195,6 +195,7 @@ def delete_job(job_id):
 @main.route('/analyze-resume/<job_id>', methods=['GET', 'POST'])
 def analyze_resume(job_id):
     job=get_job_by_jobid(job_id)
+    user_id=session.get('username')
     form = ResumeUploadForm()
 
     if form.validate_on_submit():
@@ -210,8 +211,7 @@ def analyze_resume(job_id):
             return render_template("analyze_resumes.html",form=form,job=job,message='no job')
 
         analysis = []
-        analysis_data=[]
-
+        score_data=[]
         for resume_file in uploaded_files:
             # file_path = os.path.join("uploads", resume_file.filename)
             # resume_file.save(file_path)
@@ -228,7 +228,6 @@ def analyze_resume(job_id):
 
             # Generate charts
             charts = generate_resume_charts(score, donut_analysis)
-
             analysis.append({                       # will have to remove later
                 "file_name": resume_file.filename, 
                 "analysis": resume_analysis, 
@@ -236,15 +235,21 @@ def analyze_resume(job_id):
                 "donut_analysis": donut_analysis,
                 "charts": charts
             })
-            analysis_data.append({
+            analysis_data=[{
                 "file_name": resume_file.filename, 
                 "analysis": resume_analysis, 
                 "score": score,
                 "donut_analysis": donut_analysis,
+            }]
+            score_data.append({
+                "file_name": resume_file.filename, 
+                "score": score,
+                "donut_analysis": donut_analysis,
             })
-            user_id=session.get('username')
-            insert_analysis(user_id,job_id,resume_file.filename,analysis_data)
+            resume_id = str(uuid.uuid4())
+            insert_analysis(user_id,resume_id,job_id,resume_file.filename,analysis_data)
+        rank=score_data
 
-        return render_template("resume_analysis_result.html", analyses=analysis, job_info=job)
+        return render_template("resume_analysis_result.html", analyses=analysis, job_info=job,rank=rank)
     return render_template("analyze_resume.html", form=form,job=job)
    
