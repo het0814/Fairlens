@@ -183,3 +183,22 @@ def get_company_by_userid(user_id):
         ExpressionAttributeValues={":user_id": user_id}
     )
     return response['Items'][0]["company_id"] if response['Items'] else None
+
+def insert_analysis(user_id,job_id,file_name,analysis):
+    table = get_dynamodb().Table('ResumeAnalysis')
+    table.put_item(
+        Item={
+            'user_id':user_id,
+            'job_id': job_id,
+            'filename': file_name,
+            'analysis': analysis
+        }
+    )
+
+def get_analysis_by_filename(file_name):
+    table = get_dynamodb().Table('ResumeAnalysis')
+    response = table.scan(
+        FilterExpression="filename = :filename",
+        ExpressionAttributeValues={":filename": file_name}
+    )
+    return response['Items'][0] if response['Items'] else None

@@ -210,6 +210,7 @@ def analyze_resume(job_id):
             return render_template("analyze_resumes.html",form=form,job=job,message='no job')
 
         analysis = []
+        analysis_data=[]
 
         for resume_file in uploaded_files:
             # file_path = os.path.join("uploads", resume_file.filename)
@@ -228,35 +229,22 @@ def analyze_resume(job_id):
             # Generate charts
             charts = generate_resume_charts(score, donut_analysis)
 
-            analysis.append({
+            analysis.append({                       # will have to remove later
                 "file_name": resume_file.filename, 
                 "analysis": resume_analysis, 
                 "score": score,
                 "donut_analysis": donut_analysis,
                 "charts": charts
             })
-    
+            analysis_data.append({
+                "file_name": resume_file.filename, 
+                "analysis": resume_analysis, 
+                "score": score,
+                "donut_analysis": donut_analysis,
+            })
+            user_id=session.get('username')
+            insert_analysis(user_id,job_id,resume_file.filename,analysis_data)
 
         return render_template("resume_analysis_result.html", analyses=analysis, job_info=job)
     return render_template("analyze_resume.html", form=form,job=job)
-    #     ranked_results = sorted(results, key=lambda x: x["total_score"], reverse=True)
-    #     for idx, result in enumerate(ranked_results):
-    #         result["rank"] = idx + 1
-
-    #     top_applicants = {
-    #             "Male": [],
-    #             "Female": [],
-    #             "Transgender": [],
-    #             "LGBTQ": [],
-    #             "Minority": [],
-    #             "Disability": [],
-    #         }
-    #     for result in results:
-    #         for gender in result["gender_found"]:
-    #             if gender.capitalize() in top_applicants:
-    #                 top_applicants[gender.capitalize()].append(result["resume_filename"])
-
-    #     flash("Analysis completed successfully!", "success")
-    #     return render_template("analyze_resume.html", form=form,job=job,top_applicants=top_applicants, ranked_results=ranked_results)
-
-    # return render_template("analyze_resume.html", form=form,job=job,top_applicants=top_applicants, ranked_results=ranked_results)
+   
