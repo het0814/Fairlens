@@ -327,23 +327,23 @@ def donut_score_resume(resume_text,job_description):
 
 def rank_resumes(resume_scores):
     client = OpenAI(api_key=OPENAI_API_KEY)
-    
+    total_resumes = len(resume_scores)  
+    resume_details = "\n".join([  
+        f"File: {resume['file_name']}\nScore: {resume['score']}\nDonut Analysis: {resume['donut_analysis']}\n"
+        for resume in resume_scores
+    ])
+    print(resume_details)
     prompt = f"""
     ### Task:
-    Analyze and rank the provided resume scores based on a comprehensive evaluation.
-
-    ### Ranking Methodology:
-    1. Calculate an overall score by:
-       - Weighting each scoring parameter
-       - Considering the holistic performance across all dimensions
+    You are ranking a total of {total_resumes} resumes. 
+    Analyze and rank all resumes based on their scores.
     
-    2. Provide a detailed ranking with:
-       - Overall score out of 100
-       - Ranking position
+    1. For each resume, provide:
+       - Ranking position (1 to {total_resumes})
        - Brief justification for the ranking
     
-    ### Resume Scores:
-    {list(resume_scores)}
+    ### Resumes:
+    {resume_details}
     """
     
     response = client.chat.completions.create(
@@ -351,14 +351,14 @@ def rank_resumes(resume_scores):
         messages=[
             {
                 "role": "system",
-                "content": "Analyze and rank the resume scores comprehensively."
+                "content": "Analyze and rank all resumes comprehensively."
             },
             {
                 "role": "user",
                 "content": prompt
             }
         ],
-        response_format={
+        response_format={  # Corrected the schema for additionalProperties and overall object
             "type": "json_schema",
             "json_schema": {
                 "name": "resume_ranking",
@@ -366,38 +366,31 @@ def rank_resumes(resume_scores):
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "ranked_resumes": {
+                        "rankings": {  # Define the rankings field as an array
                             "type": "array",
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "resume_id": {
+                                    "file_name": {
                                         "type": "string",
-                                        "description": "Unique identifier for the resume"
+                                        "description": "Name of the resume file."
                                     },
-                                    "overall_score": {
+                                    "rank": {
                                         "type": "number",
-                                        "description": "Calculated overall score out of 100"
+                                        "description": "Rank of the resume out of the total resumes."
                                     },
-                                    "ranking": {
-                                        "type": "number",
-                                        "description": "Ranking position (1 being the highest)"
-                                    },
-                                    "ranking_justification": {
+                                    "justification": {
                                         "type": "string",
-                                        "description": "Explanation for the ranking"
+                                        "description": "Reasoning behind the ranking."
                                     }
                                 },
-                                "required": [
-                                    "resume_id", 
-                                    "overall_score", 
-                                    "ranking", 
-                                    "ranking_justification"
-                                ]
+                                "required": ["file_name", "rank", "justification"],
+                                "additionalProperties": False  # Corrected this placement
                             }
                         }
                     },
-                    "required": ["ranked_resumes"]
+                    "required": ["rankings"],
+                    "additionalProperties": False  # Correct placement of this
                 }
             }
         },
@@ -407,5 +400,5 @@ def rank_resumes(resume_scores):
         frequency_penalty=0,
         presence_penalty=0,
     )
+    return json.loads(response.choices[0].message.content)
     
-    return response.choices[0].message.content
