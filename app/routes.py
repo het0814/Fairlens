@@ -248,8 +248,8 @@ def analyze_resume(job_id):
             })
             resume_id = str(uuid.uuid4())
             insert_analysis(user_id,resume_id,job_id,resume_file.filename,analysis_data)
-            rank=rank_resumes(score_data)
-            print(rank)
+        rank=rank_resumes(score_data)
+        print(rank)
         return render_template("resume_analysis_result.html", analyses=analysis, job_info=job,rank=rank)
     return render_template("analyze_resume.html", form=form,job=job)
    
