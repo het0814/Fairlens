@@ -3,169 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Analysis Result</title>
+    <title>Resume Analysis Results</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        .result-container {
-            max-width: 100%;
-            overflow-x: auto;
-            padding: 15px;
-            background: #2d3748;
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .analysis-box {
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            background: #1a202c;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            color: #e2e8f0;
-            overflow-wrap: break-word;
-        }
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .table th, .table td {
-            padding: 10px;
-            border: 1px solid #4a5568;
-            text-align: left;
-            word-break: break-word;
-        }
-        .chart-container img {
-            max-width: 100%;
-            height: auto;
-        }
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .button-primary {
-            display: inline-block;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            border: none;
-            border-radius: 8px;
+        body {
+            background-color: #1e1e2f;
             color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
             text-align: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
+            background-color: #007bff;
+            padding: 15px;
+            border-radius: 8px;
             box-shadow: 0px 4px 6px rgba(0, 123, 255, 0.3);
         }
-        .button-primary:hover {
-            background: linear-gradient(135deg, #0056b3, #004494);
-            transform: translateY(-2px);
-            box-shadow: 0px 6px 10px rgba(0, 123, 255, 0.4);
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
         }
-        .button-secondary {
-            display: inline-block;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #28a745, #218838);
-            border: none;
+
+        .card {
+            background-color: #2a2a3a;
+            padding: 20px;
+            margin-top: 15px;
             border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #343a40;
+            border-radius: 8px;
+        }
+
+        .category-title {
+            font-size: 22px;
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #222;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        th {
+            background: #007bff;
             color: white;
-            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: #2a2a3a;
+        }
+
+        tr:hover {
+            background-color: #3a3a4a;
+        }
+
+        .view-button {
+            background: #28a745;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
             text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0px 4px 6px rgba(40, 167, 69, 0.3);
+            font-size: 14px;
+            display: inline-block;
+            transition: 0.3s;
         }
-        .button-secondary:hover {
-            background: linear-gradient(135deg, #218838, #1e7e34);
-            transform: translateY(-2px);
-            box-shadow: 0px 6px 10px rgba(40, 167, 69, 0.4);
+
+        .view-button:hover {
+            background: #218838;
         }
+
     </style>
 </head>
 <body>
+
     <div class="container">
-        <header>
-            <h1>Resume Analysis Result</h1>
-        </header>
-        
+        <!-- Header Section -->
+        <div class="header">
+            <h1>Resume Analysis Results for "{{ job_info['position'] }}"</h1>
+        </div>
+
+        <!-- Job Information Card -->
         <div class="card">
-            <h2>Job Profile</h2>
             <p><strong>Job ID:</strong> {{ job_info['job_id'] }}</p>
-            <p><strong>Job Name:</strong> {{ job_info['position'] }}</p>
+            <p><strong>Department Name:</strong> {{ job_info['department_name'] }}</p>
             <p><strong>Job Description:</strong> {{ job_info['description'] }}</p>
+            <p><strong>Start Date:</strong> {{ job_info['start_date'] }}</p>
+            <p><strong>Close Date:</strong> {{ job_info['close_date'] }}</p>
         </div>
-        <div class="card">
-            <p>{{rank}}</p>
-        </div>
-        
-        <hr>
-        
-        <div class="card">
-            <h2>Analysis Feedback</h2>
-            {% for item in analyses %}
-                <div class="result-container">
-                    <h3>Analysis for: {{ item.file_name }}</h3>
-                    
-                    <!-- Analysis Details -->
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <!-- Text Analysis Section -->
-                        <div class="bg-gray-700 rounded-lg p-4">
-                            <h3 class="text-xl font-semibold mb-4">Resume Analysis</h3>
-                            <pre class="bg-gray-800 p-4 rounded-md text-gray-300 text-sm overflow-x-auto">
-        {{ item.analysis }}
-                            </pre>
-                        </div>
 
-                        <!-- Score Analysis Section -->
-                        <div class="bg-gray-700 rounded-lg p-4">
-                            <h3 class="text-xl font-semibold mb-4">Score Analysis</h3>
-                            <pre class="bg-gray-800 p-4 rounded-md text-gray-300 text-sm overflow-x-auto">
-        {{ item.score }}
-                            </pre>
-                        </div>
-                    </div>
-
-                    <!-- Charts Section -->
-                    <div class="mt-6">
-                        <!-- Scoring Radar Chart -->
-                        {% if item.charts.scoring_radar_chart %}
-                        <div class="bg-gray-700 rounded-lg p-4 mb-6">
-                            <h3 class="text-xl font-semibold mb-4">Resume Scoring Radar Chart</h3>
-                            <img src="data:image/png;base64,{{ item.charts.scoring_radar_chart }}" 
-                                alt="Scoring Radar Chart" 
-                                class="w-full h-auto rounded-lg mb-4">
-                        </div>
-                        {% endif %}
-
-                        <!-- Individual Donut Charts -->
-                        {% if item.charts.individual_donut_charts %}
-                        <div class="bg-gray-700 rounded-lg p-4">
-                            <h3 class="text-xl font-semibold mb-4">Detailed Skill Evaluation</h3>
-                            <div class="grid md:grid-cols-3 gap-4">
-                                {% for category, chart in item.charts.individual_donut_charts.items() %}
-                                <div class="bg-gray-800 rounded-lg p-3">
-                                    <h4 class="text-lg font-semibold mb-2 text-center">
-                                        {{ category | replace('_', ' ') }}
-                                    </h4>
-                                    <img src="data:image/png;base64,{{ chart }}" 
-                                        alt="{{ category }} Donut Chart" 
-                                        class="w-full h-auto rounded-lg mb-3">
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endfor %}
+        <!-- Loop through each category -->
+        {% for category, resumes in analysis_results.items() %}
+        <div class="category-section">
+            <h2 class="category-title">{{ category }}</h2>
+            <table>
+                <tr>
+                    <th>Rank</th>
+                    <th>File Name</th>
+                    <th>Justification</th>
+                    <th>Action</th>
+                </tr>
+                {% for resume in resumes %}
+                <tr>
+                    <td>#{{ resume.rank }}</td>
+                    <td>{{ resume.file_name }}</td>
+                    <td>{{ resume.justification }}</td>
+                    <td>
+                        <a href="/home" class="view-button">    
+                            View Analysis Score
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
-        
-        <div class="button-group">
-            <a href="/home" class="button-primary">🏠 Back to Home</a>
-            <a href="/job-management" class="button-secondary">🔄 Analyze Another Resume</a>
-        </div>
+        {% endfor %}
     </div>
+
 </body>
 </html>

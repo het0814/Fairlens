@@ -47,9 +47,39 @@
         <form method="POST" enctype="multipart/form-data" class="form-container">
             {{ form.hidden_tag() }}
             
-            <div class="form-group">
-                <label>{{ form.resume_files.label }}</label>
-                {{ form.resume_files(class="form-control") }}
+            <div class="upload-container">
+                <div class="upload-group">
+                    <label>{{ form.male_resume.label }}</label>
+                    {{ form.male_resume(class="form-control", multiple=True) }}
+                </div>
+                <div class="upload-group">
+                    <label>{{ form.female_resume.label }}</label>
+                    {{ form.female_resume(class="form-control", multiple=True) }}
+                </div>
+                <div class="upload-group">
+                    <label>{{ form.transgender_resume.label }}</label>
+                    {{ form.transgender_resume(class="form-control", multiple=True) }}
+                </div>
+                <div class="upload-group">
+                    <label>{{ form.lgbtq_resume.label }}</label>
+                    {{ form.lgbtq_resume(class="form-control", multiple=True) }}
+                </div>
+                <div class="upload-group">
+                    <label>{{ form.indigenous_resume.label }}</label>
+                    {{ form.indigenous_resume(class="form-control", multiple=True) }}
+                </div>
+                <div class="upload-group">
+                    <label>{{ form.disability_resume.label }}</label>
+                    {{ form.disability_resume(class="form-control", multiple=True) }}
+                </div>
+                <div class="upload-group">
+                    <label>{{ form.minority_resume.label }}</label>
+                    {{ form.minority_resume(class="form-control", multiple=True) }}
+                </div>
+                <div class="upload-group">
+                    <label>{{ form.veteran_resume.label }}</label>
+                    {{ form.veteran_resume(class="form-control", multiple=True) }}
+                </div>
             </div>
             
             <div class="button-group">
@@ -57,7 +87,6 @@
             </div>
         </form>
         
-        <!-- Resume Analysis Results (Commented out for later use) -->
     </div>
 </body>
 </html>

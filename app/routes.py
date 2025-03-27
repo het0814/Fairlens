@@ -199,57 +199,67 @@ def analyze_resume(job_id):
     form = ResumeUploadForm()
 
     if form.validate_on_submit():
-        uploaded_files = form.resume_files.data
+        resume_analysis_results = {}
+        categories = {
+            "male_resume": "Male Representation",
+            "female_resume": "Female Representation",
+            "transgender_resume": "Transgender Representation",
+            "lgbtq_resume": "LGBTQ Representation",
+            "indigenous_resume": "Indigenous Representation",
+            "disability_resume": "Disability Representation",
+            "minority_resume": "Minority Representation",
+            "veteran_resume": "Veteran Representation"
+        }
         job_description = job["description"]
 
-        if not uploaded_files:
-            flash("No resumes uploaded", "error")
-            return render_template("analyze_resumes.html",form=form,job=job,message='no resume')
-        
         if not job_description:
             flash("Job description is required", "error")
-            return render_template("analyze_resumes.html",form=form,job=job,message='no job')
+            return render_template("analyze_resume.html", form=form, job=job, message="No job description")
 
-        analysis = []
-        score_data=[]
-        for resume_file in uploaded_files:
-            # file_path = os.path.join("uploads", resume_file.filename)
-            # resume_file.save(file_path)
-            file_copy = BytesIO(resume_file.read())  
-            file_copy.seek(0)
+        # Iterate through each category separately
+        for field_name, category in categories.items():
+            uploaded_files = getattr(form, field_name).data
+            score_data = []  
+            if uploaded_files:  
+                for resume_file in uploaded_files:
+                    file_copy = BytesIO(resume_file.read())  
+                    file_copy.seek(0)
 
-            upload_Resume(job_id,resume_file)
-            resume_text=extract_text(file_copy,resume_file.filename)
-            
-            # Perform analysis
-            resume_analysis = analyze_resume_service(resume_text, job_description)
-            score = score_resume(resume_text,job_description)
-            donut_analysis = donut_score_resume(resume_text,job_description)
+                    upload_Resume(job_id, resume_file)
+                    resume_text = extract_text(file_copy, resume_file.filename)
 
-            # Generate charts
-            charts = generate_resume_charts(score, donut_analysis)
-            analysis.append({                       # will have to remove later
-                "file_name": resume_file.filename, 
-                "analysis": resume_analysis, 
-                "score": score,
-                "donut_analysis": donut_analysis,
-                "charts": charts
-            })
-            analysis_data=[{
-                "file_name": resume_file.filename, 
-                "analysis": resume_analysis, 
-                "score": score,
-                "donut_analysis": donut_analysis,
-            }]
-            score_data.append({
-                "file_name": resume_file.filename, 
-                "score": score,
-                "donut_analysis": donut_analysis,
-            })
-            resume_id = str(uuid.uuid4())
-            insert_analysis(user_id,resume_id,job_id,resume_file.filename,analysis_data)
-        rank=rank_resumes(score_data)
-        print(rank)
-        return render_template("resume_analysis_result.html", analyses=analysis, job_info=job,rank=rank)
+                    # Perform analysis
+                    resume_analysis = analyze_resume_service(resume_text, job_description)
+                    score = score_resume(resume_text, job_description)
+                    donut_analysis = donut_score_resume(resume_text, job_description)
+
+                    # Store individual resume analysis
+                    analysis_data = [{
+                        "file_name": resume_file.filename, 
+                        "analysis": resume_analysis, 
+                        "score": score,
+                        "donut_analysis": donut_analysis
+                    }]
+
+                    # Store for ranking
+                    score_data.append({
+                        "file_name": resume_file.filename, 
+                        "score": score,
+                        "donut_analysis": donut_analysis
+                    })
+
+                    # Insert into database
+                    resume_id = str(uuid.uuid4())
+                    insert_analysis(user_id, resume_id, job_id, resume_file.filename, analysis_data)
+
+                # Rank resumes for the current category
+                rankings = json.loads(rank_resumes(score_data))["rankings"]
+
+                # Store results in dictionary
+                resume_analysis_results[category] = rankings
+        return render_template("resume_analysis_result.html", job_info=job,analysis_results=resume_analysis_results)
     return render_template("analyze_resume.html", form=form,job=job)
    
+
+# Generate charts
+            # charts = generate_resume_charts(score, donut_analysis)   

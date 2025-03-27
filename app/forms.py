@@ -73,6 +73,21 @@ class JobForm(FlaskForm):
     submit = SubmitField("Create")
 
 class ResumeUploadForm(FlaskForm):
-    resume_files = MultipleFileField("Upload Resumes", validators=[DataRequired(),
-        FileAllowed(['pdf','docx'], 'Only PDF and DOCX files are allowed!')])
+    male_resume = MultipleFileField("Upload Male Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    female_resume = MultipleFileField("Upload Female Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    transgender_resume = MultipleFileField("Upload Transgender Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    lgbtq_resume = MultipleFileField("Upload LGBTQ Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    indigenous_resume = MultipleFileField("Upload Indigenous Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    disability_resume = MultipleFileField("Upload Disability Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    minority_resume = MultipleFileField("Upload Minority Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    veteran_resume = MultipleFileField("Upload Veteran Resumes", validators=[
+        FileAllowed(['pdf', 'docx'], 'Only PDF and DOCX files are allowed!')])
+    
     analyze = SubmitField("Analyze")
