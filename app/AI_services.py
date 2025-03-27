@@ -328,11 +328,6 @@ def donut_score_resume(resume_text,job_description):
 def rank_resumes(resume_scores):
     client = OpenAI(api_key=OPENAI_API_KEY)
     total_resumes = len(resume_scores)  
-    resume_details = "\n".join([  
-        f"File: {resume['file_name']}\nScore: {resume['score']}\nDonut Analysis: {resume['donut_analysis']}\n"
-        for resume in resume_scores
-    ])
-    print(resume_details)
     prompt = f"""
     ### Task:
     You are ranking a total of {total_resumes} resumes. 
@@ -343,9 +338,8 @@ def rank_resumes(resume_scores):
        - Brief justification for the ranking
     
     ### Resumes:
-    {resume_details}
+    {resume_scores}
     """
-    
     response = client.chat.completions.create(
         model='gpt-4o-mini',
         messages=[
@@ -358,7 +352,7 @@ def rank_resumes(resume_scores):
                 "content": prompt
             }
         ],
-        response_format={  # Corrected the schema for additionalProperties and overall object
+        response_format={  
             "type": "json_schema",
             "json_schema": {
                 "name": "resume_ranking",
@@ -366,7 +360,7 @@ def rank_resumes(resume_scores):
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "rankings": {  # Define the rankings field as an array
+                        "rankings": {  
                             "type": "array",
                             "items": {
                                 "type": "object",
@@ -385,12 +379,12 @@ def rank_resumes(resume_scores):
                                     }
                                 },
                                 "required": ["file_name", "rank", "justification"],
-                                "additionalProperties": False  # Corrected this placement
+                                "additionalProperties": False 
                             }
                         }
                     },
                     "required": ["rankings"],
-                    "additionalProperties": False  # Correct placement of this
+                    "additionalProperties": False
                 }
             }
         },
@@ -400,5 +394,5 @@ def rank_resumes(resume_scores):
         frequency_penalty=0,
         presence_penalty=0,
     )
-    return json.loads(response.choices[0].message.content)
+    return response.choices[0].message.content
     
