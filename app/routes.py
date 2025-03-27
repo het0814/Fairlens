@@ -1,5 +1,5 @@
 import uuid
-from flask import Blueprint, jsonify, render_template, redirect, url_for, flash,request, current_app, session
+from flask import Blueprint, render_template, redirect, url_for, flash,request, session
 from app.forms import LoginForm,SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
 from datetime import datetime
 import os
@@ -8,6 +8,7 @@ from app.db_services import *
 from app.DG_services import *
 from app.Chart_Generator_services import*
 from app.s3_services import*
+from app.textExtraction_services import *
 
 import boto3
 from botocore.exceptions import ClientError
@@ -211,11 +212,13 @@ def analyze_resume(job_id):
         analysis = []
 
         for resume_file in uploaded_files:
-            file_path = os.path.join("uploads", resume_file.filename)
-            resume_file.save(file_path)
-            upload_Resume(job_id,resume_file,resume_file.filename)
+            # file_path = os.path.join("uploads", resume_file.filename)
+            # resume_file.save(file_path)
+            file_copy = BytesIO(resume_file.read())  
+            file_copy.seek(0)
 
-            resume_text=extract_text(file_path,resume_file.filename)
+            upload_Resume(job_id,resume_file)
+            resume_text=extract_text(file_copy,resume_file.filename)
             
             # Perform analysis
             resume_analysis = analyze_resume_service(resume_text, job_description)

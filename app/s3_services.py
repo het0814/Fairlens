@@ -6,8 +6,8 @@ def get_s3bucket():
 def upload_CompanyData(company_id,file):
     get_s3bucket().upload_fileobj(file,f"CompanyData/{company_id}/data.csv")
 
-def upload_Resume(job_id,file,file_name):
-    get_s3bucket().upload_fileobj(file,f"Resumes/{job_id}/{file_name}")
+def upload_Resume(job_id,file):
+    get_s3bucket().upload_fileobj(file,f"Resumes/{job_id}/{file.filename}")
 
 def get_CompanyData(company_id):
     obj = get_s3bucket().Object(f"CompanyData/{company_id}/data.csv")

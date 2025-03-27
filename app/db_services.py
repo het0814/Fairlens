@@ -183,4 +183,3 @@ def get_company_by_userid(user_id):
         ExpressionAttributeValues={":user_id": user_id}
     )
     return response['Items'][0]["company_id"] if response['Items'] else None
-            

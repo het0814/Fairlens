@@ -1,21 +1,7 @@
-import fitz
-import docx
 from openai import OpenAI
 
 
 OPENAI_API_KEY = "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"
-
-# Function to extract text from PDF and DOCX
-def extract_text(file_path,file_name):
-    if file_name.endswith(".pdf"):
-        text = ""
-        with fitz.open(file_path) as doc:
-            for page in doc:
-                text += page.get_text()
-        return text
-    elif file_name.endswith(".docx"):
-        doc = docx.Document(file_path)
-        return "\n".join([para.text for para in doc.paragraphs])
 
 # def model_inference(messages):
 #     response = openai.ChatCompletion.create(
