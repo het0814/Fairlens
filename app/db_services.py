@@ -196,10 +196,10 @@ def insert_analysis(user_id,resume_id,job_id,file_name,analysis):
         }
     )
 
-def get_analysis_by_filename(file_name):
+def get_analysis_by_resumeid(resume_id):
     table = get_dynamodb().Table('ResumeAnalysis')
     response = table.scan(
-        FilterExpression="filename = :filename",
-        ExpressionAttributeValues={":filename": file_name}
+        FilterExpression="resume_id = :resume_id",
+        ExpressionAttributeValues={":resume_id": resume_id}
     )
     return response['Items'][0] if response['Items'] else None

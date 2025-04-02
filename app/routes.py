@@ -240,16 +240,18 @@ def analyze_resume(job_id):
                         "score": score,
                         "donut_analysis": donut_analysis
                     }]
+                    
+                    resume_id = str(uuid.uuid4())
 
                     # Store for ranking
                     score_data.append({
+                        "resume_id": resume_id,
                         "file_name": resume_file.filename, 
                         "score": score,
                         "donut_analysis": donut_analysis
                     })
 
                     # Insert into database
-                    resume_id = str(uuid.uuid4())
                     insert_analysis(user_id, resume_id, job_id, resume_file.filename, analysis_data)
 
                 # Rank resumes for the current category
@@ -259,7 +261,32 @@ def analyze_resume(job_id):
                 resume_analysis_results[category] = rankings
         return render_template("resume_analysis_result.html", job_info=job,analysis_results=resume_analysis_results)
     return render_template("analyze_resume.html", form=form,job=job)
-   
 
-# Generate charts
-            # charts = generate_resume_charts(score, donut_analysis)   
+@main.route('/resume-analysis/<resume_id>')
+def resume_analysis(resume_id):
+    # Fetch resume analysis data from DB
+    resume_analysis_data = get_analysis_by_resumeid(resume_id)
+
+    if not resume_analysis_data:
+        flash("No analysis found for this resume.", "error")
+        return redirect(url_for('main.dashboard'))
+
+    # Extract stored data 
+    file_name = resume_analysis_data.get('filename')
+    analysis_json = resume_analysis_data.get('analysis')[0]
+    analysis_data=analysis_json.get('analysis')
+    score_data = analysis_json.get('score')
+    donut_data = analysis_json.get('donut_analysis')
+
+    # Generate charts
+    charts = generate_resume_charts(score_data, donut_data)
+
+    # Package everything to match the expected template format
+    analysis_data = [{
+        "file_name": file_name,
+        "analysis": analysis_data,
+        "score": score_data,
+        "charts": charts
+    }]
+
+    return render_template("analysis_scores.html",analysis=analysis_data,test=resume_analysis_data)

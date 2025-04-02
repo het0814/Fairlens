@@ -89,15 +89,74 @@
         <header>
             <h1>Resume Analysis Result</h1>
         </header>
-        
         <div class="card">
-            <h2>Job Profile</h2>
-            <p><strong>Job ID:</strong> {{ job_info['job_id'] }}</p>
-            <p><strong>Job Name:</strong> {{ job_info['position'] }}</p>
-            <p><strong>Job Description:</strong> {{ job_info['description'] }}</p>
-        </div>
-        <div class="card">
-            <p>{{rank}}</p>
+            {% for item in analysis %}
+            <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4">Analysis for {{ item.file_name }}</h2>
+                <!-- Analysis Details -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Text Analysis Section -->
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <h3 class="text-xl font-semibold mb-4">Resume Analysis</h3>
+                        <p> 
+    {{ item.analysis }}
+                        </p>
+                    </div>
+    
+                    <!-- Score Analysis Section -->
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <h3 class="text-xl font-semibold mb-4">Score Analysis</h3>
+                        <pre class="bg-gray-800 p-4 rounded-md text-gray-300 text-sm overflow-x-auto">
+    {{ item.score }}
+                        </pre>
+                    </div>
+                </div>
+    
+                <!-- Charts Section -->
+                <div class="mt-6">
+                    <!-- Scoring Radar Chart -->
+                    {% if item.charts.scoring_radar_chart %}
+                    <div class="bg-gray-700 rounded-lg p-4 mb-6">
+                        <h3 class="text-xl font-semibold mb-4">Resume Scoring Radar Chart</h3>
+                        <img src="data:image/png;base64,{{ item.charts.scoring_radar_chart }}" 
+                             alt="Scoring Radar Chart" 
+                             class="w-full h-auto rounded-lg mb-4">
+                        <div class="flex justify-center">
+                            <button onclick="downloadChart('{{ item.charts.scoring_radar_chart }}', 'scoring_radar_{{ item.file_name }}')" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Download Scoring Radar Chart
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+    
+                    <!-- Individual Donut Charts -->
+                    {% if item.charts.individual_donut_charts %}
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <h3 class="text-xl font-semibold mb-4">Detailed Skill Evaluation</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            {% for category, chart in item.charts.individual_donut_charts.items() %}
+                            <div class="bg-gray-800 rounded-lg p-3">
+                                <h4 class="text-lg font-semibold mb-2 text-center">
+                                    {{ category | replace('_', ' ') }}
+                                </h4>
+                                <img src="data:image/png;base64,{{ chart }}" 
+                                     alt="{{ category }} Donut Chart" 
+                                     class="w-full h-auto rounded-lg mb-3">
+                                <div class="flex justify-center">
+                                    <button onclick="downloadChart('{{ chart }}', '{{ category }}_{{ item.file_name }}')" 
+                                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm">
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
         </div>
         
         <hr>

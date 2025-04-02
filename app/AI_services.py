@@ -365,6 +365,10 @@ def rank_resumes(resume_scores):
                             "items": {
                                 "type": "object",
                                 "properties": {
+                                    "resume_id": {
+                                        "type": "string",
+                                        "description": "Return the exact resume_id provided in prompt."
+                                    },
                                     "file_name": {
                                         "type": "string",
                                         "description": "Name of the resume file."
@@ -378,7 +382,7 @@ def rank_resumes(resume_scores):
                                         "description": "Reasoning behind the ranking."
                                     }
                                 },
-                                "required": ["file_name", "rank", "justification"],
+                                "required": ["resume_id","file_name", "rank", "justification"],
                                 "additionalProperties": False 
                             }
                         }
