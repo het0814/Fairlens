@@ -103,74 +103,68 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>New Job Posting</h1>
-    </header>
-
-    <form method="POST" action="/create-job" onsubmit="return confirmSubmit()">
-      {{ form.hidden_tag() }}
-
-      <div class="form-group">
-        <label>{{ form.job_id.label }}</label>
-        {{ form.job_id(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.position.label }}</label>
-        {{ form.position(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.department_id.label }}</label>
-        {{ form.department_id(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.department_name.label }}</label>
-        {{ form.department_name(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.description.label }}</label>
-        {{ form.description(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.looking_for.label }}</label>
-        {{ form.looking_for(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.total_applicant.label }}</label>
-        {{ form.total_applicant(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.status.label }}</label>
-        {{ form.status(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.start_date.label }}</label>
-        {{ form.start_date(class="form-control") }}
-      </div>
-
-      <div class="form-group">
-        <label>{{ form.close_date.label }}</label>
-        {{ form.close_date(class="form-control") }}
-      </div>
-
-      <div class="button-group">
-        <button type="submit">Create Job</button>
-      </div>
-    </form>
-  </div>
-
-  <script>
-    function confirmSubmit() {
-      return confirm("Are you sure you want to create this job?");
-    }
-  </script>
+    <div class="container">
+        <header>
+            <h1>New Job Posting</h1>
+        </header>
+        
+        <form method="POST" action="/create-job">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                <label>{{ form.job_id.label }}</label>
+                {{ form.job_id(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.position.label }}</label>
+                {{ form.position(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.department_id.label }}</label>
+                {{ form.department_id(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.department_name.label }}</label>
+                {{ form.department_name(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.description.label }}</label>
+                {{ form.description(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.looking_for.label }}</label>
+                {{ form.looking_for(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.total_applicant.label }}</label>
+                {{ form.total_applicant(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.status.label }}</label>
+                {{ form.status(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.start_date.label }}</label>
+                {{ form.start_date(class="form-control") }}
+            </div>
+            
+            <div class="form-group">
+                <label>{{ form.close_date.label }}</label>
+                {{ form.close_date(class="form-control") }}
+            </div>
+            
+            <div class="button-group">
+                <button type="submit">Create Job</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

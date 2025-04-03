@@ -152,8 +152,8 @@ def home():
 
 @main.route('/job-management')
 def job_management():
-
-    jobs=get_all_jobs()
+    user_id=session.get('username')
+    jobs=get_all_jobs(user_id)
     stats = {
         "total_jobs": len(jobs),
         "active_jobs": len([job for job in jobs if job["status"] == "Active"]),
@@ -164,9 +164,11 @@ def job_management():
 
 @main.route('/create-job', methods=['GET', 'POST'])
 def create_job():
+    job_id = str(uuid.uuid4())
+    user_id=session.get('username')
     form = JobForm()
     if form.validate_on_submit():
-        insert_job(form.job_id.data,form.position.data,form.department_id.data,form.department_name.data,form.description.data,form.looking_for.data,form.total_applicant.data,form.status.data,form.start_date.data,form.close_date.data)
+        insert_job(job_id,user_id,form.position.data,form.department_id.data,form.department_name.data,form.description.data,form.looking_for.data,form.total_applicant.data,form.status.data,form.start_date.data,form.close_date.data)
         flash("Job created successfully!", "success")
         return redirect(url_for('main.job_management'))
     
@@ -178,7 +180,7 @@ def edit_job(job_id):
     form = JobForm(data=job)
 
     if form.validate_on_submit():
-        update_job(form.job_id.data,form.position.data,form.department_id.data,form.department_name.data,form.description.data,form.looking_for.data,form.total_applicant.data,form.status.data,form.start_date.data,form.close_date.data)
+        update_job(job_id,form.position.data,form.department_id.data,form.department_name.data,form.description.data,form.looking_for.data,form.total_applicant.data,form.status.data,form.start_date.data,form.close_date.data)
         flash("Job updated successfully!", "success")
         return redirect(url_for('main.job_management'))
 
@@ -194,8 +196,8 @@ def delete_job(job_id):
 
 @main.route('/analyze-resume/<job_id>', methods=['GET', 'POST'])
 def analyze_resume(job_id):
-    job=get_job_by_jobid(job_id)
     user_id=session.get('username')
+    job=get_job_by_jobid(job_id)
     form = ResumeUploadForm()
 
     if form.validate_on_submit():

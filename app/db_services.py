@@ -76,17 +76,18 @@ def get_diversity_by_diversityid(diversity_id):
     )
     return response['Items'][0] if response['Items'] else None
 
-def insert_job(job_id, position, department_id, department_name, description,looking_for,total_applicant,status,start_date, close_date):
+def insert_job(job_id, user_id, position, department_id, department_name, description,looking_for,total_applicant,status,start_date, close_date):
     table = get_dynamodb().Table('Jobs')
     table.put_item(
         Item={
             'job_id': job_id,
+            'user_id':user_id,
             'position': position,
             'department_id': department_id,
             'department_name': department_name,
             'description': description,
             'looking_for': looking_for,
-            'total_aaplicant': total_applicant,
+            'total_applicant': total_applicant,
             'status':status,
             'start_date': start_date,
             'close_date': close_date
@@ -102,9 +103,12 @@ def get_job_by_jobid(job_id):
     )
     return response['Items'][0] if response['Items'] else None
 
-def get_all_jobs():
+def get_all_jobs(user_id):
     table = get_dynamodb().Table('Jobs')
-    response = table.scan()  
+    response = table.scan(
+        FilterExpression="user_id = :user_id",
+        ExpressionAttributeValues={":user_id": user_id}
+    )  
     return response['Items'] if response['Items'] else []
 
 def delete_job_item(job_id):
@@ -131,7 +135,6 @@ def update_job(job_id, position=None, department_id=None, department_name=None, 
         update_expression.append("#status = :status")
         expression_attribute_values[":status"] = status
         expression_attribute_names["#status"] = "status"  
-    
     if department_id:
         update_expression.append("department_id = :department_id")
         expression_attribute_values[":department_id"] = department_id
