@@ -60,7 +60,6 @@ class DiversityGoalForm(FlaskForm):
     submit = SubmitField('Set-up and Complete')
 
 class JobForm(FlaskForm):
-    job_id = StringField("Job ID", validators=[DataRequired()])
     position = StringField("Name of the Position", validators=[DataRequired()])
     department_id = StringField("Department ID", validators=[DataRequired()])
     department_name = StringField("Department Name", validators=[DataRequired()])
