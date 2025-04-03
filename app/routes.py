@@ -284,8 +284,8 @@ def resume_analysis(resume_id):
     # Package everything to match the expected template format
     analysis_data = [{
         "file_name": file_name,
-        "analysis": analysis_data,
-        "score": score_data,
+        "analysis": json.loads(analysis_data),
+        "score": json.loads(score_data),
         "charts": charts
     }]
 
