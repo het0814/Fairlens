@@ -5,76 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Profile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script defer src="{{ url_for('static', filename='js/company_profile.js') }}"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="container wide-container fade-in">
+
         <header>
-            <h1>Company's Profile</h1>
+            <h1>Company Profile Setup</h1>
+            <p class="subtitle">Provide company details to enhance your analytics</p>
         </header>
         
         <form method="POST" action="{{ url_for('main.company_setup') }}" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             
-            <h2>Company Details</h2>
-            <div class="form-group">
-                <label>{{ form.company_name.label }}</label>
-                {{ form.company_name(class="form-control") }}
-            </div>
+            <section class="form-section">
+                <h2>Company Details</h2>
+                <div class="form-group">
+                    <label>{{ form.company_name.label }}</label>
+                    {{ form.company_name(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.industry_type.label }}</label>
+                    {{ form.industry_type(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.num_employees.label }}</label>
+                    {{ form.num_employees(class="form-control") }}
+                </div>
+            </section>
             
-            <div class="form-group">
-                <label>{{ form.industry_type.label }}</label>
-                {{ form.industry_type(class="form-control") }}
-            </div>
+            <section class="form-section">
+                <h2>Address</h2>
+                <div class="form-group">
+                    <label>{{ form.street.label }}</label>
+                    {{ form.street(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.city.label }}</label>
+                    {{ form.city(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.province.label }}</label>
+                    {{ form.province(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.postal_code.label }}</label>
+                    {{ form.postal_code(class="form-control") }}
+                </div>
+            </section>
             
-            <div class="form-group">
-                <label>{{ form.num_employees.label }}</label>
-                {{ form.num_employees(class="form-control") }}
-            </div>
-            
-            <h2>Address</h2>
-            <div class="form-group">
-                <label>{{ form.street.label }}</label>
-                {{ form.street(class="form-control") }}
-            </div>
-            
-            <div class="form-group">
-                <label>{{ form.city.label }}</label>
-                {{ form.city(class="form-control") }}
-            </div>
-            
-            <div class="form-group">
-                <label>{{ form.province.label }}</label>
-                {{ form.province(class="form-control") }}
-            </div>
-            
-            <div class="form-group">
-                <label>{{ form.postal_code.label }}</label>
-                {{ form.postal_code(class="form-control") }}
-            </div>
-            
-            <div class="form-group">
-                <label>{{ form.phone.label }}</label>
-                {{ form.phone(class="form-control") }}
-            </div>
-            
-            <div class="form-group">
-                <label>{{ form.email.label }}</label>
-                {{ form.email(class="form-control") }}
-            </div>
-            
-            <div class="form-group">
-                <label>{{ form.website.label }}</label>
-                {{ form.website(class="form-control") }}
-            </div>
-            
-            <h2>Upload Employee Data</h2>
-            <div class="form-group">
-                <label>{{ form.employee_data.label }}</label>
-                {{ form.employee_data(class="form-control") }}
-            </div>
+            <section class="form-section">
+                <h2>Contact</h2>
+                <div class="form-group">
+                    <label>{{ form.phone.label }}</label>
+                    {{ form.phone(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.email.label }}</label>
+                    {{ form.email(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.website.label }}</label>
+                    {{ form.website(class="form-control") }}
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>Upload Employee Data</h2>
+                <div class="form-group">
+                    <label>{{ form.employee_data.label }}</label>
+                    {{ form.employee_data(class="form-control") }}
+                </div>
+            </section>
             
             <div class="button-group">
-                <button type="submit">Save</button>
+                <button type="submit" id="submitBtn">Save Profile</button>
             </div>
         </form>
     </div>

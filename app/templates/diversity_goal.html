@@ -8,53 +8,80 @@
     <style>
         .layout {
             display: flex;
+            flex-wrap: wrap;
             gap: 20px;
+            margin-top: 20px;
         }
+
         .form-container {
-            width: 65%;
+            flex: 1 1 60%;
         }
+
         .suggestion-box {
-            width: 35%;
+            flex: 1 1 35%;
             background: #2d3748;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
             color: #e2e8f0;
         }
+
         .suggestion-box h2 {
             text-align: center;
             margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #63b3ed;
         }
+
         .suggestion-list p {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 6px 0;
             font-size: 1rem;
         }
+
         .auto-fill-button {
             display: block;
             width: 100%;
             padding: 12px;
             font-size: 16px;
             font-weight: bold;
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, #2b6cb0, #2c5282);
             border: none;
             border-radius: 6px;
             color: white;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 15px;
         }
+
         .auto-fill-button:hover {
-            background: linear-gradient(135deg, #0056b3, #004494);
+            background: linear-gradient(135deg, #2c5282, #1a365d);
             transform: translateY(-2px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container fade-in">
         <header>
             <h1>Diversity Goal Setup</h1>
+            <p class="subtitle">Set your company’s diversity representation targets aligned with national benchmarks</p>
         </header>
         
         <div class="layout">
@@ -109,12 +136,12 @@
             </div>
             
             <div class="suggestion-box">
-                <h2>Government Suggested Diversity Goals</h2>
+                <h2>Gov't Suggested Diversity Goals</h2>
                 <div class="suggestion-list">
-                    <p><strong>Female Representation:</strong> <span id="sug-female">{{suggestions[0]}}</span>%</p>
-                    <p><strong>Indigenous Representation:</strong> <span id="sug-indig">{{suggestions[1]}}</span>%</p>
-                    <p><strong>Disability Representation:</strong> <span id="sug-disab">{{suggestions[2]}}</span>%</p>
-                    <p><strong>Minority Representation:</strong> <span id="sug-minor">{{suggestions[3]}}</span>%</p>
+                    <p><strong>Female:</strong> <span id="sug-female">{{suggestions[0]}}</span>%</p>
+                    <p><strong>Indigenous:</strong> <span id="sug-indig">{{suggestions[1]}}</span>%</p>
+                    <p><strong>Disability:</strong> <span id="sug-disab">{{suggestions[2]}}</span>%</p>
+                    <p><strong>Minority:</strong> <span id="sug-minor">{{suggestions[3]}}</span>%</p>
                 </div>
                 <button class="auto-fill-button" onclick="autoFillSuggestions()">Auto-Fill Suggestions</button>
             </div>

@@ -301,7 +301,7 @@ def donut_score_resume(resume_text,job_description):
                     "type": "number",
                     "description": "Score (out of 100) measuring ability to handle change, learn new skills, and adapt to new environments or technologies."
                 },
-                "Location_Test": {
+                "adaptability": {
                     "type": "number",
                     "description": "Score (out of 100) measuring ability to handle change, learn new skills, and adapt to new environments or technologies."
                 },
@@ -311,7 +311,7 @@ def donut_score_resume(resume_text,job_description):
                 "Experience_Level_Distribution",
                 "Work_Location_Flexibility",
                 "Keywords_and_Phrases_Match",
-                "Location_Test"
+                "adaptability"
             ],
             "additionalProperties": False
             }

@@ -271,22 +271,20 @@ def resume_analysis(resume_id):
         flash("No analysis found for this resume.", "error")
         return redirect(url_for('main.dashboard'))
 
-    # Extract stored data 
     file_name = resume_analysis_data.get('filename')
     analysis_json = resume_analysis_data.get('analysis')[0]
-    analysis_data=analysis_json.get('analysis')
-    score_data = analysis_json.get('score')
-    donut_data = analysis_json.get('donut_analysis')
 
-    # Generate charts
-    charts = generate_resume_charts(score_data, donut_data)
+    # Parsed fields
+    analysis_data = json.loads(analysis_json.get('analysis'))
+    score_data = json.loads(analysis_json.get('score'))
+    donut_data = json.loads(analysis_json.get('donut_analysis'))
 
-    # Package everything to match the expected template format
-    analysis_data = [{
+    # Pack into a single item
+    analysis_result = {
         "file_name": file_name,
-        "analysis": json.loads(analysis_data),
-        "score": json.loads(score_data),
-        "charts": charts
-    }]
+        "analysis": analysis_data,
+        "score": score_data,
+        "donut_scores":donut_data
+    }
 
-    return render_template("analysis_scores.html",analysis=analysis_data,test=resume_analysis_data)
+    return render_template("analysis_scores.html", analysis_result=analysis_result)

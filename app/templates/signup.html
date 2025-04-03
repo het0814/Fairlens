@@ -5,45 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FairLens - Signup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script defer src="/static/js/signup.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .login-redirect-btn {
+            display: inline-block;
+            background-color: #4c51bf;
+            color: #fff !important;
+            padding: 10px 15px;
+            margin-top: 20px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .login-redirect-btn:hover {
+            background-color: #434190;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>FairLens Signup</h1>
+            <h1>Create Your FairLens Account</h1>
+            <p class="subtitle">Empowering HR with smart recruitment tools</p>
         </header>
-        
-        <form method="POST" action="{{ url_for('main.signup') }}">
+
+        <form method="POST" action="{{ url_for('main.signup') }}" id="signupForm">
             {{ form.hidden_tag() }}
-            
+
             <div class="form-group">
                 <label>{{ form.first_name.label }}</label>
                 {{ form.first_name(size=20, class="form-control") }}
             </div>
-            
+
             <div class="form-group">
                 <label>{{ form.last_name.label }}</label>
                 {{ form.last_name(size=20, class="form-control") }}
             </div>
-            
+
             <div class="form-group">
                 <label>{{ form.email.label }}</label>
                 {{ form.email(size=20, class="form-control") }}
             </div>
-            
+
             <div class="form-group">
                 <label>{{ form.password.label }}</label>
                 {{ form.password(size=20, class="form-control") }}
             </div>
-            
+
             <div class="form-group">
                 <label>{{ form.confirm_password.label }}</label>
                 {{ form.confirm_password(size=20, class="form-control") }}
             </div>
-            
+
             <button type="submit">Sign Up</button>
         </form>
-        
-        <a href="/login" class="button secondary">Already have an account? Login</a>
+
+        <div class="button-group" style="text-align:center">
+            <a href="/login" class="login-redirect-btn">Already have an account? Login</a>
+        </div>
     </div>
 </body>
 </html>

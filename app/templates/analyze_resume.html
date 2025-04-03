@@ -1,92 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyze Resumes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .analyze-button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #28a745, #218838);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0px 4px 6px rgba(40, 167, 69, 0.3);
-        }
-        .analyze-button:hover {
-            background: linear-gradient(135deg, #218838, #1e7e34);
-            transform: translateY(-2px);
-            box-shadow: 0px 6px 10px rgba(40, 167, 69, 0.4);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analyze Resumes</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #0f172a, #1e3a8a);
+      color: #e2e8f0;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #1e293b;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    header {
+      background: #1e40af;
+      padding: 25px 0;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 30px;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .card {
+      background: #2d3748;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .card p {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .form-container {
+      background: #2d3748;
+      padding: 30px;
+      border-radius: 12px;
+    }
+
+    .upload-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .upload-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .upload-group label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #cbd5e0;
+    }
+
+    .form-control {
+      padding: 12px;
+      background-color: #1a202c;
+      color: #e2e8f0;
+      border: 1px solid #4a5568;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+    }
+
+    .button-group {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .analyze-button {
+      padding: 14px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #28a745, #218838);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0px 4px 6px rgba(40, 167, 69, 0.3);
+    }
+
+    .analyze-button:hover {
+      background: linear-gradient(135deg, #218838, #1e7e34);
+      transform: translateY(-2px);
+      box-shadow: 0px 6px 10px rgba(40, 167, 69, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .upload-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Analyze Resumes for Job Position: "{{ job['position'] }}"</h1>
-        </header>
-        
-        <div class="card">
-            <p><strong>Job ID:</strong> {{ job['job_id'] }}</p>
-            <p><strong>Department ID:</strong> {{ job['department_id'] }}</p>
-            <p><strong>Department Name:</strong> {{ job['department_name'] }}</p>
-            <p><strong>Job Description:</strong> {{ job['description'] }}</p>
-            <p><strong>Looking for:</strong> {{ job['looking_for'] }}</p>
-            <p><strong>Start Date:</strong> {{ job['start_date'] }}</p>
-            <p><strong>Close Date:</strong> {{ job['close_date'] }}</p>
-        </div>
-        
-        <form method="POST" enctype="multipart/form-data" class="form-container">
-            {{ form.hidden_tag() }}
-            
-            <div class="upload-container">
-                <div class="upload-group">
-                    <label>{{ form.male_resume.label }}</label>
-                    {{ form.male_resume(class="form-control", multiple=True) }}
-                </div>
-                <div class="upload-group">
-                    <label>{{ form.female_resume.label }}</label>
-                    {{ form.female_resume(class="form-control", multiple=True) }}
-                </div>
-                <div class="upload-group">
-                    <label>{{ form.transgender_resume.label }}</label>
-                    {{ form.transgender_resume(class="form-control", multiple=True) }}
-                </div>
-                <div class="upload-group">
-                    <label>{{ form.lgbtq_resume.label }}</label>
-                    {{ form.lgbtq_resume(class="form-control", multiple=True) }}
-                </div>
-                <div class="upload-group">
-                    <label>{{ form.indigenous_resume.label }}</label>
-                    {{ form.indigenous_resume(class="form-control", multiple=True) }}
-                </div>
-                <div class="upload-group">
-                    <label>{{ form.disability_resume.label }}</label>
-                    {{ form.disability_resume(class="form-control", multiple=True) }}
-                </div>
-                <div class="upload-group">
-                    <label>{{ form.minority_resume.label }}</label>
-                    {{ form.minority_resume(class="form-control", multiple=True) }}
-                </div>
-                <div class="upload-group">
-                    <label>{{ form.veteran_resume.label }}</label>
-                    {{ form.veteran_resume(class="form-control", multiple=True) }}
-                </div>
-            </div>
-            
-            <div class="button-group">
-                {{ form.analyze(class="analyze-button") }}
-            </div>
-        </form>
-        
+  <div class="container">
+    <header>
+      <h1>Analyze Resumes for Job Position: "{{ job['position'] }}"</h1>
+    </header>
+
+    <div class="card">
+      <p><strong>Job ID:</strong> {{ job['job_id'] }}</p>
+      <p><strong>Department ID:</strong> {{ job['department_id'] }}</p>
+      <p><strong>Department Name:</strong> {{ job['department_name'] }}</p>
+      <p><strong>Job Description:</strong> {{ job['description'] }}</p>
+      <p><strong>Looking for:</strong> {{ job['looking_for'] }}</p>
+      <p><strong>Start Date:</strong> {{ job['start_date'] }}</p>
+      <p><strong>Close Date:</strong> {{ job['close_date'] }}</p>
     </div>
+
+    <form method="POST" enctype="multipart/form-data" class="form-container">
+      {{ form.hidden_tag() }}
+
+      <div class="upload-container">
+        <div class="upload-group">
+          <label>{{ form.male_resume.label }}</label>
+          {{ form.male_resume(class="form-control", multiple=True) }}
+        </div>
+
+        <div class="upload-group">
+          <label>{{ form.female_resume.label }}</label>
+          {{ form.female_resume(class="form-control", multiple=True) }}
+        </div>
+
+        <div class="upload-group">
+          <label>{{ form.transgender_resume.label }}</label>
+          {{ form.transgender_resume(class="form-control", multiple=True) }}
+        </div>
+
+        <div class="upload-group">
+          <label>{{ form.lgbtq_resume.label }}</label>
+          {{ form.lgbtq_resume(class="form-control", multiple=True) }}
+        </div>
+
+        <div class="upload-group">
+          <label>{{ form.indigenous_resume.label }}</label>
+          {{ form.indigenous_resume(class="form-control", multiple=True) }}
+        </div>
+
+        <div class="upload-group">
+          <label>{{ form.disability_resume.label }}</label>
+          {{ form.disability_resume(class="form-control", multiple=True) }}
+        </div>
+
+        <div class="upload-group">
+          <label>{{ form.minority_resume.label }}</label>
+          {{ form.minority_resume(class="form-control", multiple=True) }}
+        </div>
+
+        <div class="upload-group">
+          <label>{{ form.veteran_resume.label }}</label>
+          {{ form.veteran_resume(class="form-control", multiple=True) }}
+        </div>
+      </div>
+
+      <div class="button-group">
+        {{ form.analyze(class="analyze-button") }}
+      </div>
+    </form>
+  </div>
 </body>
 </html>

@@ -1,57 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job & Resume Management Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job & Resume Management Dashboard</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f172a, #1e3a8a);
+      color: #e2e8f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 95%;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #fff;
+    }
+
+    .stats-cards {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: #1f2937;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 200px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      font-size: 1.2rem;
+    }
+
+    .card span {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #60a5fa;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 1.1rem;
+      background-color: #1f2937;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    thead th {
+      background-color: #2563eb;
+      color: white;
+      padding: 14px;
+      text-align: left;
+    }
+
+    tbody tr {
+      transition: background-color 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background-color: #374151;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+      margin-right: 5px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+
+    .btn.blue {
+      background-color: #3b82f6;
+    }
+
+    .btn.red {
+      background-color: #ef4444;
+    }
+
+    .btn.green {
+      background-color: #10b981;
+    }
+
+    .btn.create {
+      background-color: #4f46e5;
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    .button-group {
+      text-align: right;
+      margin-top: 15px;
+    }
+
+    tr.highlight {
+      background-color: #4b5563 !important;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Job & Resume Management Dashboard</h1>
-        </header>
-        
-        <div class="dashboard">
-            <div class="card">
-                <p><strong>Total Job Postings:</strong> {{ stats.total_jobs }}</p>
-                <p><strong>Active Jobs:</strong> {{ stats.active_jobs }}</p>
-                <p><strong>Deadline Today:</strong> {{ stats.deadlines_today }}</p>
-            </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Job ID</th>
-                        <th>Position</th>
-                        <th>Total Applicants</th>
-                        <th>Department</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for job in jobs %}
-                    <tr>
-                        <td>{{ job.job_id }}</td>
-                        <td>{{ job.position }}</td>
-                        <td>{{ job.total_applicant }}</td>
-                        <td>{{ job.department_name }}</td>
-                        <td>{{ job.status }}</td>
-                        <td>
-                            <a href="/edit-job/{{ job.job_id }}" class="button">Edit</a>
-                            <a href="/delete-job/{{ job.job_id }}" class="button secondary">Delete</a>
-                            <a href="/analyze-resume/{{ job.job_id }}" class="button">Analyze</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="button-group">
-            <a href="/create-job" class="button">Create Job Posting</a>
-        </div>
+  <div class="container">
+    <header>
+      <h1>Job & Resume Management Dashboard</h1>
+    </header>
+
+    <div class="stats-cards">
+      <div class="card">
+        <p>Total Job Postings</p>
+        <span>{{ stats.total_jobs }}</span>
+      </div>
+      <div class="card">
+        <p>Active Jobs</p>
+        <span>{{ stats.active_jobs }}</span>
+      </div>
+      <div class="card">
+        <p>Deadline Today</p>
+        <span>{{ stats.deadlines_today }}</span>
+      </div>
     </div>
+
+    <div class="dashboard">
+      <table>
+        <thead>
+          <tr>
+            <th>Job ID</th>
+            <th>Position</th>
+            <th>Total Applicants</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr>
+            <td>{{ job.job_id }}</td>
+            <td>{{ job.position }}</td>
+            <td>{{ job.total_applicant }}</td>
+            <td>{{ job.department_name }}</td>
+            <td>{{ job.status }}</td>
+            <td>
+              <a href="/edit-job/{{ job.job_id }}" class="btn blue">Edit</a>
+              <a href="/delete-job/{{ job.job_id }}" class="btn red">Delete</a>
+              <a href="/analyze-resume/{{ job.job_id }}" class="btn green">Analyze</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="button-group">
+      <a href="/create-job" class="btn create">➕ Create Job Posting</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const rows = document.querySelectorAll("table tbody tr");
+      rows.forEach(row => {
+        row.addEventListener("mouseover", () => {
+          row.style.cursor = "pointer";
+        });
+
+        row.addEventListener("click", () => {
+          row.classList.toggle("highlight");
+        });
+      });
+    });
+  </script>
 </body>
 </html>

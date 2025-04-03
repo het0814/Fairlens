@@ -58,20 +58,79 @@ def create_radar_chart(scores, title):
 
     return image_base64
 
+# def create_individual_donut_charts(scores):
+#     # Initialize dictionary to store individual donut charts
+#     individual_charts = {}
+
+#     # Color palettes
+#     color_palettes = [
+#         plt.cm.Pastel1,
+#         plt.cm.Pastel2,
+#         plt.cm.Set3,
+#         plt.cm.Set2,
+#         plt.cm.Set1
+#     ]
+
+#     # Create a donut chart for each skill category
+#     skill_categories = [
+#         'Technical_Skills_Proficiency',
+#         'Experience_Level_Distribution',
+#         'Work_Location_Flexibility',
+#         'Keywords_and_Phrases_Match',
+#         'Location_Test'
+#     ]
+
+#     for idx, category in enumerate(skill_categories):
+#         # Create donut chart for the specific category
+#         fig, ax = plt.subplots(figsize=(8, 6))
+        
+#         # Get the score for this category
+#         score = scores.get(category, 0)
+        
+#         # Create color palette
+#         colors = color_palettes[idx](np.linspace(0, 1, 2))
+        
+#         # Create donut chart
+#         wedges, texts, autotexts = ax.pie(
+#             [score, 100 - score],  # Score vs Remaining
+#             labels=['Achieved', 'Remaining'],
+#             colors=colors,
+#             autopct='%1.1f%%',
+#             pctdistance=0.85,
+#             wedgeprops=dict(width=0.5, edgecolor='white')
+#         )
+
+#         # Customize appearance
+#         plt.setp(autotexts, size=8, weight="bold", color="white")
+#         plt.setp(texts, size=10)
+        
+#         plt.title(f"{category} Evaluation", size=12, color='darkblue')
+
+#         # Convert plot to base64 for embedding in HTML
+#         buffer = io.BytesIO()
+#         plt.savefig(buffer, format='png', bbox_inches='tight', dpi=300)
+#         buffer.seek(0)
+#         image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+#         plt.close()
+
+#         # Store the chart
+#         individual_charts[category] = image_base64
+
+#     return individual_charts
 def create_individual_donut_charts(scores):
-    # Initialize dictionary to store individual donut charts
-    individual_charts = {}
+    """
+    Converts skill scores into JSON-ready Chart.js data format.
+    Example output:
+    {
+        'Technical_Skills_Proficiency': {
+            'labels': ['Achieved', 'Remaining'],
+            'data': [75, 25]
+        },
+        ...
+    }
+    """
+    individual_chart_data = {}
 
-    # Color palettes
-    color_palettes = [
-        plt.cm.Pastel1,
-        plt.cm.Pastel2,
-        plt.cm.Set3,
-        plt.cm.Set2,
-        plt.cm.Set1
-    ]
-
-    # Create a donut chart for each skill category
     skill_categories = [
         'Technical_Skills_Proficiency',
         'Experience_Level_Distribution',
@@ -80,43 +139,15 @@ def create_individual_donut_charts(scores):
         'Location_Test'
     ]
 
-    for idx, category in enumerate(skill_categories):
-        # Create donut chart for the specific category
-        fig, ax = plt.subplots(figsize=(8, 6))
-        
-        # Get the score for this category
+    for category in skill_categories:
         score = scores.get(category, 0)
-        
-        # Create color palette
-        colors = color_palettes[idx](np.linspace(0, 1, 2))
-        
-        # Create donut chart
-        wedges, texts, autotexts = ax.pie(
-            [score, 100 - score],  # Score vs Remaining
-            labels=['Achieved', 'Remaining'],
-            colors=colors,
-            autopct='%1.1f%%',
-            pctdistance=0.85,
-            wedgeprops=dict(width=0.5, edgecolor='white')
-        )
+        remaining = max(0, 100 - score)
+        individual_chart_data[category] = {
+            'labels': ['Achieved', 'Remaining'],
+            'data': [score, remaining]
+        }
 
-        # Customize appearance
-        plt.setp(autotexts, size=8, weight="bold", color="white")
-        plt.setp(texts, size=10)
-        
-        plt.title(f"{category} Evaluation", size=12, color='darkblue')
-
-        # Convert plot to base64 for embedding in HTML
-        buffer = io.BytesIO()
-        plt.savefig(buffer, format='png', bbox_inches='tight', dpi=300)
-        buffer.seek(0)
-        image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-        plt.close()
-
-        # Store the chart
-        individual_charts[category] = image_base64
-
-    return individual_charts
+    return individual_chart_data
 
 def generate_resume_charts(score, donut_score):
     # Parse the scores
