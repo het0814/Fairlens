@@ -158,3 +158,20 @@ button.secondary:hover {
 .wide-container .form-section h2 {
   grid-column: span 2;
 }
+
+a {
+  display: inline-block;
+  background: linear-gradient(135deg, #b02b2b, #e17442);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+a:hover {
+  background: linear-gradient(135deg, #822c2c, #ce6531);
+  transform: scale(1.03);
+}

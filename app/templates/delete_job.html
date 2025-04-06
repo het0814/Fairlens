@@ -12,11 +12,11 @@
             <h1>Delete Job</h1>
         </header>
         
-        <p class="alert">Are you sure you want to delete the job with ID <strong>{{ job_id }}</strong>?</p>
+        <p class="alert">Are you sure you want to delete the job ?</p>
         
         <form method="POST" action="/delete-job/{{ job_id }}" class="button-group">
             <button type="submit" class="danger">Yes, Delete</button>
-            <a href="/job-management" class="button secondary">Cancel</a>
+            <a href="/job-management" class="btn red">Cancel</a>
         </form>
     </div>
 </body>
