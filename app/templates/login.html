@@ -1,65 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FairLens - Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <script defer src="/static/js/login.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .subtitle {
-            font-size: 14px;
-            font-weight: 400;
-            color: #90cdf4;
-            margin-top: 5px;
-        }
-        .create-account-btn {
-            display: inline-block;
-            background-color: #4c51bf;
-            color: #fff !important;
-            padding: 10px 15px;
-            margin-top: 20px;
-            text-align: center;
-            border-radius: 8px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-        .create-account-btn:hover {
-            background-color: #434190;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FairLens - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #0f172a, #1e3a8a);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5%;
+    }
+
+    .form-section {
+      width: 400px;
+      color: white;
+    }
+
+    .form-section h1 {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #dbeafe;
+      margin-bottom: 35px;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .forgot-password {
+      font-size: 13px;
+      margin: 10px 0 20px;
+      color: #dbeafe;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 16px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1d4ed8;
+    }
+
+    .signup-link {
+      font-size: 15px;
+      margin-top: 20px;
+      color: #dbeafe;
+      text-align: center;
+    }
+
+    .signup-link a {
+      color: white;
+      font-weight: 500;
+      text-decoration: underline;
+    }
+
+    .image-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .image-section img {
+      max-width: 90%;
+      height: auto;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 40px;
+      }
+
+      .image-section {
+        margin-top: 30px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Welcome to FairLens</h1>
-            <p class="subtitle">AI-powered HR Intelligence</p>
-        </header>
+  <div class="form-section">
+    <h1>FairLens</h1>
+    <div class="subtitle">AI-powered HR Intelligence</div>
 
-        <form method="POST" action="/login" id="loginForm">
-            {{ form.hidden_tag() }}
+    <form method="POST" action="/login">
+      {{ form.hidden_tag() }}
 
-            <div class="form-group">
-                <label>{{ form.username.label }}</label>
-                {{ form.username(class="form-control") }}
-            </div>
+      <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(class="form-control", placeholder="Enter Email") }}
+      </div>
 
-            <div class="form-group">
-                <label>{{ form.password.label }}</label>
-                {{ form.password(class="form-control") }}
-            </div>
+      <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(class="form-control", placeholder="Enter Password") }}
+      </div>
+      <button type="submit">Sign In</button>
 
-            <button type="submit">Login</button>
-        </form>
+      <div class="signup-link">
+        Don't have an account? <a href="/signup">Sign Up</a>
+      </div>
+    </form>
+  </div>
 
-        <div class="button-group" style="text-align: center;">
-            <a href="/signup" class="create-account-btn">Create New Account</a>
-        </div>
-    </div>
+  <div class="image-section">
+    <img src="{{ url_for('static', filename='images/image.png') }}" alt="HR Dashboard Illustration" />
+  </div>
 </body>
 </html>
