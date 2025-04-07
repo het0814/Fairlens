@@ -1,0 +1,50 @@
+prompt = """
+### Task:
+Analyze the provided candidate resume and assess their career trajectory based on the following five parameters. Assign a **score out of 100** for each parameter based on relevance, depth, and career progression.
+
+Generate a structured response suitable for a **donut chart visualization**.
+
+---
+
+### **Evaluation Criteria & Scoring Parameters**:
+
+1️⃣ **Career Stability & Progression (0-100)**  
+   - Measures **job consistency, tenure, and career growth**.  
+   - High score: **Long tenure, clear progression, minimal gaps**.  
+   - Low score: **Frequent job changes, career stagnation, or gaps**.
+
+2️⃣ **Continuous Learning & Upskilling (0-100)**  
+   - Evaluates **ongoing education, certifications, and skill development**.  
+   - High score: **Recent certifications, advanced courses, proactive learning**.  
+   - Low score: **No recent skill enhancements, lack of formal upskilling**.
+
+3️⃣ **Diversity of Experience (0-100)**  
+   - Assesses **varied industry exposure, cross-functional roles, and adaptability**.  
+   - High score: **Multiple domains, interdisciplinary roles, diverse experience**.  
+   - Low score: **Limited exposure to new industries or roles**.
+
+4️⃣ **Project Experience (0-100)**  
+   - Analyzes **practical exposure through projects (professional, academic, or personal)**.  
+   - High score: **Multiple impactful projects, leadership in projects**.  
+   - Low score: **Minimal or no project experience**.
+
+5️⃣ **Extracurricular & Volunteering (0-100)**  
+   - Evaluates **participation in community work, leadership roles, and extracurricular activities**.  
+   - High score: **Active volunteering, community contributions, extracurricular activities**.  
+   - Low score: **No non-work activities or volunteering efforts**.
+
+---
+---### **Expected Input:**
+- **Job Description**: {}
+- **Candidate Resume**: {}
+
+
+**Scoring Output**:  
+```json
+{
+  "Career_Stability_Progression": 90,
+  "Continuous_Learning_Upskilling": 95,
+  "Diversity_of_Experience": 80,
+  "Project_Experience": 88,
+  "Extracurricular_Volunteering": 85
+}

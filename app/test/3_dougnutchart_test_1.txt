@@ -1,0 +1,51 @@
+prompt = """
+### Task:
+Analyze the provided candidate resume against the given job description and evaluate the candidate based on the following five key parameters. Assign a **score out of 100** for each parameter based on relevance, depth, and alignment with professional growth.
+
+The final output should be structured to generate a **donut chart visualization**, where each parameter is assigned a score.
+
+---
+
+### **Evaluation Criteria & Scoring Parameters**:  
+
+-- **Career Stability & Progression (0-100)**  
+   - Assess how **consistent** and **progressive** the candidate’s career has been.  
+   - Look at **job transitions, promotions, tenure at each company, and career growth over time**.  
+   - A high score indicates **steady progression and long-term commitment**, whereas a lower score suggests **frequent job changes, gaps, or lack of clear growth**.
+
+-- **Continuous Learning & Upskilling (0-100)**  
+   - Evaluate the candidate’s commitment to **ongoing education, certifications, and skill enhancements**.  
+   - Consider **formal degrees, online courses, certifications, and professional development efforts**.  
+   - A higher score suggests **active learning and upskilling**, while a lower score indicates **stagnation with minimal efforts toward skill improvement**.
+
+-- **Diversity of Experience (0-100)**  
+   - Assess the **variety** in the candidate’s work experience, including **different industries, roles, or job functions**.  
+   - Consider if the candidate has worked in **multiple domains, handled cross-functional responsibilities, or has an interdisciplinary background**.  
+   - A high score means **rich, diverse experience**, while a lower score means **a narrow or limited career scope**.
+
+-- **Project Experience (0-100)**  
+   - Evaluate the **candidate’s hands-on experience with projects**, whether academic, professional, or personal.  
+   - Consider **leadership in projects, impact, number of completed projects, and depth of involvement**.  
+   - A high score means **strong practical exposure**, while a lower score suggests **limited project-based contributions**.
+
+-- **Extracurricular & Volunteering (0-100)**  
+   - Analyze the candidate’s participation in **extracurricular activities, volunteering efforts, and community engagement**.  
+   - Consider **non-work activities like leadership roles in organizations, social impact initiatives, hackathons, mentoring, or volunteering**.  
+   - A high score reflects **strong engagement beyond work**, while a lower score indicates **little to no extracurricular involvement**.
+
+------### **Expected Input:**
+- **Job Description**: {}
+- **Candidate Resume**: {}
+
+
+### **Scoring Output Example**:  
+Return a structured response in the following format to be used for a donut chart:
+
+```json
+{
+  "Career_Stability_Progression": 85,
+  "Continuous_Learning_Upskilling": 90,
+  "Diversity_of_Experience": 75,
+  "Project_Experience": 80,
+  "Extracurricular_Volunteering": 88
+}

@@ -1,0 +1,56 @@
+prompt = """
+### Task:
+Analyze the provided candidate resume against the given job description and evaluate the candidate’s suitability based on the following five key parameters. Assign a **score out of 100** for each parameter based on relevance, depth, and alignment with the job description.  
+
+Provide a structured evaluation by considering skills, experience, adaptability, education, and overall impact.  
+
+---
+
+### **Evaluation Criteria & Scoring Parameters**:  
+
+--**Technical Compatibility (0-100)**  
+   - Assess how well the candidate’s **technical skills, tools, and technologies** align with the job description.  
+   - Consider **hands-on experience**, **certifications**, **software proficiency**, **coding languages**, **technical frameworks**, or any other job-specific technical expertise.  
+   - Evaluate the depth of experience in using these technologies and the candidate’s ability to apply them in real-world scenarios.  
+   - A score closer to **100** indicates high technical proficiency and perfect alignment, while a lower score suggests gaps in required skills.  
+
+-- **Industry Experience (0-100)**  
+   - Determine if the candidate has **experience within the same industry** as the job posting.  
+   - Consider factors such as **previous companies, industry-specific projects, sector knowledge, and regulatory familiarity** (if applicable).  
+   - Evaluate whether the candidate understands industry best practices, challenges, and trends.  
+   - A high score means the candidate has **extensive experience in the industry**, whereas a lower score suggests the experience is either **too general** or **in a different sector**.  
+
+--**Workplace Adaptability (0-100)**  
+   - Assess the candidate’s ability to **adapt to different work environments, company cultures, and team dynamics**.  
+   - Look at previous roles, job transitions, remote/hybrid work experience, or ability to work under pressure.  
+   - Identify mentions of **collaboration, problem-solving, leadership adaptability, or working in fast-paced environments**.  
+   - A score of **100** suggests exceptional flexibility and adaptability across different work settings, while a lower score indicates a **rigid work style** or **limited adaptability**.  
+
+--**Educational Strength (0-100)**  
+   - Analyze whether the candidate’s **academic background aligns with the job requirements**.  
+   - Consider **degree level (Bachelor’s, Master’s, Ph.D.), major or specialization, and additional relevant certifications**.  
+   - Evaluate whether the candidate possesses specialized education **directly related to the job role** (e.g., an AI Engineer with a Master’s in Machine Learning).  
+   - A perfect score means the candidate has **ideal educational qualifications**, while a lower score means **there are gaps in academic credentials** compared to the job requirements.  
+
+--**Performance Impact (0-100)**  
+   - Evaluate how much measurable **impact** the candidate has made in previous roles.  
+   - Look at contributions in terms of **efficiency improvements, revenue growth, project success, leadership influence, or innovative solutions**.  
+   - Identify **quantifiable achievements** (e.g., “Increased efficiency by 30%,” “Managed a team of 20 engineers,” “Led a project generating $1M in revenue”).  
+   - A high score means the candidate has a **proven track record of delivering results**, while a lower score means their impact is **unclear, unquantified, or minimal**.  
+
+---### **Expected Input:**
+- **Job Description**: {}
+- **Candidate Resume**: {}
+
+
+### **Scoring Output Example**:  
+Return a structured response in the following format:  
+
+```json
+{
+  "Technical_Compatibility": 85,
+  "Industry_Experience": 90,
+  "Workplace_Adaptability": 75,
+  "Educational_Strength": 80,
+  "Performance_Impact": 88
+}

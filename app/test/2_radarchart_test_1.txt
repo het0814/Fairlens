@@ -1,0 +1,44 @@
+prompt = """
+### Task:
+Analyze the provided candidate resume against the given job description and evaluate the candidate based on the following five key parameters. Assign a **score out of 100** for each parameter based on relevance, depth, and alignment with the job description.
+
+---
+
+### **Evaluation Criteria & Scoring Parameters**:
+
+-- **Technical Compatibility (0-100)**
+   - Assess the candidate’s proficiency in the required technical skills, tools, and technologies mentioned in the job description.
+   - Consider certifications, hands-on experience, and demonstrated expertise.
+
+-- **Industry Experience (0-100)**
+   - Evaluate how well the candidate’s past work experience aligns with the industry of the job role.
+   - Consider years of experience, domain-specific knowledge, and past companies worked at.
+
+-- **Workplace Adaptability (0-100)**
+   - Analyze the candidate’s ability to adapt to different work environments, team dynamics, and workplace cultures.
+   - Look at past roles, job transitions, and mentions of flexibility or adaptability.
+
+-- **Educational Strength (0-100)**
+   - Review the relevance and level of education compared to the job’s requirements.
+   - Consider degrees, relevant coursework, certifications, and academic excellence.
+
+-- **Performance Impact (0-100)**
+   - Measure the candidate’s past contributions in terms of impact, efficiency improvements, leadership, or innovation.
+   - Consider achievements, key project contributions, and measurable outcomes.
+
+---### **Expected Input:**
+- **Job Description**: {}
+- **Candidate Resume**: {}
+
+
+### **Scoring Output Example**:
+Return a structured response in the following format:
+
+```json
+{
+  "Technical_Compatibility": 85,
+  "Industry_Experience": 90,
+  "Workplace_Adaptability": 75,
+  "Educational_Strength": 80,
+  "Performance_Impact": 88
+}
