@@ -20,7 +20,8 @@
 
         .layout {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row;
+            align-items: flex-start;
             gap: 20px;
             margin-top: 20px;
         }
@@ -80,9 +81,15 @@
         background-color: #777;
         }
 
+        .content-column {
+            flex: 1;
+        }
 
         .suggestion-box {
-            flex: 1 1 35%;
+            width: 300px;
+            position: sticky;
+            top: 100px; /* adjust as needed */
+            align-self: flex-start;
             background: #2d3748;
             padding: 20px;
             border-radius: 8px;
@@ -185,33 +192,34 @@
             <p><strong>Close Date:</strong> {{ job_info['close_date'] }}</p>
         </div>
         <div class="layout">
-            <!-- Loop through each category -->
-            {% for category, resumes in analysis_results.items() %}
-            <div class="category-section">
-                <h2 class="category-title">{{ category }}</h2>
-                <table>
-                    <tr>
-                        <th>Rank</th>
-                        <th>File Name</th>
-                        <th>Justification</th>
-                        <th>Action</th>
-                    </tr>
-                    {% for resume in resumes %}
-                    <tr>
-                        <td>#{{ resume.rank }}</td>
-                        <td>{{ resume.file_name }}</td>
-                        <td>{{ resume.justification }}</td>
-                        <td>
-                            <a href="/resume-analysis/{{ resume.resume_id }}" class="view-button">    
-                                View Analysis Score
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
+            <div class="content-column">
+                <!-- Loop through each category -->
+                {% for category, resumes in analysis_results.items() %}
+                <div class="category-section">
+                    <h2 class="category-title">{{ category }}</h2>
+                    <table>
+                        <tr>
+                            <th>Rank</th>
+                            <th>File Name</th>
+                            <th>Justification</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for resume in resumes %}
+                        <tr>
+                            <td>#{{ resume.rank }}</td>
+                            <td>{{ resume.file_name }}</td>
+                            <td>{{ resume.justification }}</td>
+                            <td>
+                                <a href="/resume-analysis/{{ resume.resume_id }}" class="view-button">    
+                                    View Analysis Score
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-
             <div class="suggestion-box">
                 <h2>Diversity Goals</h2>
                 <div class="suggestion-list">
