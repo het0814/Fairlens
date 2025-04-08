@@ -1,98 +1,143 @@
 import dash
 from dash import dcc, html, Input, Output
+
 from app.Dashboard_Pages.Dashboard_Page_1 import register_callbacks as page1_callbacks
 from app.Dashboard_Pages.Dashboard_Page_2 import register_callbacks as page2_callbacks
 from app.Dashboard_Pages.Dashboard_Page_3 import register_callbacks as page3_callbacks
 from app.Dashboard_Pages.Dashboard_Page_4 import register_callbacks as page4_callbacks
 from app.Dashboard_Pages.Dashboard_Page_5 import register_callbacks as page5_callbacks
 
+
 def init_dashboard(server):
-    app = dash.Dash(__name__,
-                    suppress_callback_exceptions=True,
-                    server=server,
-                    url_base_pathname='/dashboard/',
-                    external_stylesheets=["/static/css/custom.css"]
-                    )
+    app = dash.Dash(__name__, suppress_callback_exceptions=True, server=server, url_base_pathname='/dashboard/')
+    app.title = "FairLens HR Analytics"
+
+    def kpi_card(title, value):
+        return html.Div([
+            html.Div([
+                html.H6(title, style={'color': '#e2e8f0', 'marginBottom': '4px'}),
+                html.H4(value, style={'color': '#63b3ed', 'fontWeight': 'bold', 'fontSize': '20px'}),
+            ], style={
+                'backgroundColor': '#1a202c',
+                'padding': '10px 15px',
+                'borderRadius': '8px',
+                'boxShadow': '0 2px 8px rgba(0,255,255,0.1)',
+                'width': '140px',
+                'textAlign': 'center'
+            })
+        ])
 
     app.layout = html.Div([
+        # Top Bar: KPI Cards + Title + Buttons on Right
         html.Div([
-            html.H1("HR Analytics", style={'textAlign': 'center'}),
-            html.H2("FairLens: Visualization Board", style={'textAlign': 'center', 'color': '#63b3ed'})
-        ], className="header-box"),
+            # KPI Cards
+            html.Div([
+                kpi_card("Total Employees", "310"),
+                kpi_card("Avg Pay Rate", "31.28"),
+                kpi_card("Avg Age", "25.53")
+            ], style={
+                'display': 'flex',
+                'gap': '15px',
+                'alignItems': 'center'
+            }),
 
+            # Centered Title
+            html.Div([
+                html.H1("FairLens HR Analytics", style={
+                    'color': '#63b3ed', 'margin': '0', 'fontWeight': 'bold'
+                }),
+                html.H4("Intelligent Workforce Insights", style={
+                    'color': '#a0aec0', 'marginTop': '4px'
+                }),
+            ], style={'marginLeft': '40px'}),
+
+            # Home + Sign Out Buttons
+            html.Div([
+                html.A("🏠 Home", href="/home", style={
+                    'backgroundColor': '#1f2937',
+                    'color': '#63b3ed',
+                    'padding': '10px 14px',
+                    'borderRadius': '6px',
+                    'marginRight': '10px',
+                    'textDecoration': 'none',
+                    'fontWeight': 'bold',
+                    'border': '1px solid #2d3748'
+                }),
+                html.A("🔓 Sign Out", href="/login", style={
+                    'backgroundColor': '#1f2937',
+                    'color': '#63b3ed',
+                    'padding': '10px 14px',
+                    'borderRadius': '6px',
+                    'textDecoration': 'none',
+                    'fontWeight': 'bold',
+                    'border': '1px solid #2d3748'
+                }),
+            ], style={'marginLeft': 'auto'})  # Push to right
+        ], style={
+            'display': 'flex',
+            'alignItems': 'center',
+            'justifyContent': 'space-between',
+            'flexWrap': 'wrap',
+            'marginBottom': '30px',
+            'padding': '10px 20px',
+            'backgroundColor': '#0d1117'
+        }),
+
+        # Tabs Section
         html.Div([
-            html.Div([
-                html.Div([html.H4("Total Employees"), html.H2("310")], className="stat-box"),
-                html.Div([html.H4("Avg Pay Rate"), html.H2("31.28")], className="stat-box"),
-                html.Div([html.H4("Avg Age"), html.H2("25.53")], className="stat-box")
-            ], className="sidebar"),
+            dcc.Tabs(
+                id="tabs",
+                value='tab-1',
+                children=[
+                    dcc.Tab(label='Employee Demographics', value='tab-1'),
+                    dcc.Tab(label='Employee Performance', value='tab-2'),
+                    dcc.Tab(label='Compensation & Tenure', value='tab-3'),
+                    dcc.Tab(label='Recruitment & Development', value='tab-4'),
+                    dcc.Tab(label='Attrition & Diversity Trends', value='tab-5'),
+                ],
+                style={
+                    'backgroundColor': '#0d1117',
+                    'color': '#cbd5e1',
+                    'borderBottom': '1px solid #2d3748',
+                    'fontWeight': 'bold'
+                },
+                colors={
+                    'border': '#2d3748',
+                    'primary': '#63b3ed',
+                    'background': '#1f2937'
+                },
+                className='custom-tabs'
+            ),
+            html.Div(id='content-area', style={'padding': '25px'})
+        ], style={
+            'width': '100%',
+            'margin': '0 auto',
+            'backgroundColor': '#1a202c',
+            'borderRadius': '12px',
+            'boxShadow': '0 0 12px rgba(99,179,237,0.15)',
+        })
+    ], style={'backgroundColor': '#0d1117', 'minHeight': '100vh', 'padding': '30px'})
 
-            html.Div([
-                html.Div([
-                    html.Button("Employee Demographics", id="tab-1-btn", n_clicks=0, className="tab-button"),
-                    html.Button("Employee Performance", id="tab-2-btn", n_clicks=0, className="tab-button"),
-                    html.Button("Compensation & Tenure", id="tab-3-btn", n_clicks=0, className="tab-button"),
-                    html.Button("Recruitment & Development", id="tab-4-btn", n_clicks=0, className="tab-button"),
-                    html.Button("Attrition & Diversity Trends", id="tab-5-btn", n_clicks=0, className="tab-button")
-                ], className="tab-bar"),
-                html.Div(id='content-area', className="content-box")
-            ], className="main-panel")
-        ], className="dashboard-body")
-    ])
-
+    # Callback to switch tab content
     @app.callback(
         Output('content-area', 'children'),
-        Output('tab-1-btn', 'className'),
-        Output('tab-2-btn', 'className'),
-        Output('tab-3-btn', 'className'),
-        Output('tab-4-btn', 'className'),
-        Output('tab-5-btn', 'className'),
-        Input('tab-1-btn', 'n_clicks'),
-        Input('tab-2-btn', 'n_clicks'),
-        Input('tab-3-btn', 'n_clicks'),
-        Input('tab-4-btn', 'n_clicks'),
-        Input('tab-5-btn', 'n_clicks'),
+        [Input('tabs', 'value')]
     )
-    def update_tab_content(n1, n2, n3, n4, n5):
-        clicks = [n1, n2, n3, n4, n5]
-        idx = clicks.index(max(clicks))
+    def update_content(tab):
+        def graph_grid(*graph_ids):
+            return html.Div([
+                html.Div([dcc.Graph(id=graph_id)], style={'width': '48%', 'marginBottom': '25px'})
+                for graph_id in graph_ids
+            ], style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'space-between', 'gap': '20px'})
 
-        classes = ["tab-button"] * 5
-        classes[idx] = "tab-button active"
-
-        return [
-            tab1_content(),
-            tab2_content(),
-            tab3_content(),
-            tab4_content(),
-            tab5_content()
-        ][idx], *classes
-
-    def grid_content(title, graphs):
-        return html.Div([
-            html.H2(title, style={'textAlign': 'center', 'color': '#63b3ed'}),
-            html.Div([
-                html.Div([dcc.Graph(id=graphs[0])], className="graph-cell"),
-                html.Div([dcc.Graph(id=graphs[1])], className="graph-cell")
-            ], className="graph-row"),
-            html.Div([
-                html.Div([dcc.Graph(id=graphs[2])], className="graph-cell"),
-                html.Div([dcc.Graph(id=graphs[3])], className="graph-cell")
-            ], className="graph-row")
-        ])
-
-    def tab1_content():
-        return grid_content("Employee Demographics", [
-            'donut-chart',
-            'bar-chart',
-            'diversity-bar-chart',
-            'age-bin-pie-chart'
-        ])
-
-    def tab2_content():
-        return html.Div([
-            html.Div([
-                html.Label("Select Metric", style={'color': '#fff'}),
+        if tab == 'tab-1':
+            return html.Div([
+                graph_grid('donut-chart', 'bar-chart'),
+                graph_grid('diversity-bar-chart', 'age-bin-pie-chart')
+            ])
+        elif tab == 'tab-2':
+            return html.Div([
+                html.Label("Select Metric", style={'color': '#63b3ed', 'marginBottom': '10px'}),
                 dcc.Dropdown(
                     id="metric-dropdown",
                     options=[
@@ -100,71 +145,75 @@ def init_dashboard(server):
                         {"label": "Work Life Balance", "value": "WorkLifeBalance"}
                     ],
                     value="JobSatisfaction",
-                    style={'width': '50%'}
-                )
-            ], style={'padding': '20px'}),
-            grid_content("Employee Performance", [
-                'satisfaction-pie',
-                'job-satisfaction-line-chart',
-                'overtime-satisfaction-bar-chart',
-                'overtime-performance-count-bar-chart'
-            ])
-        ])
-
-    def tab3_content():
-        return grid_content("Compensation & Tenure", [
-            'salary-distribution',
-            'salary-hike-vs-performance',
-            'years-at-company',
-            'attrition-by-department'
-        ])
-
-    def tab4_content():
-        return grid_content("Recruitment & Development", [
-            'hiring-source-bar-chart',
-            'average-training-bar-chart',
-            'training-performance-scatter',
-            'years-with-manager-histogram'
-        ])
-
-    def tab5_content():
-        return html.Div([
-            html.Div([
-                html.Label("Gender Diversity Category", style={'color': '#fff'}),
-                dcc.Dropdown(
-                    id='gender-dropdown',
-                    options=[
-                        {'label': 'Female', 'value': 'IsFemale'},
-                        {'label': 'Male', 'value': 'IsMale'},
-                        {'label': 'Transgender', 'value': 'IsTransgender'},
-                        {'label': 'Non-binary', 'value': 'IsNon_binary_non_conforming'},
-                        {'label': 'Prefer not to say', 'value': 'IsPrefer_not_to_say'},
-                        {'label': 'Other', 'value': 'IsOther'},
-                    ],
-                    value='IsFemale',
-                    style={'width': '50%'}
+                    style={"width": "50%", "marginBottom": "30px"}
                 ),
-                html.Label("Diversity Category", style={'color': '#fff', 'marginTop': '10px'}),
-                dcc.Dropdown(
-                    id='diversity-dropdown',
-                    options=[
-                        {'label': 'Indigenous', 'value': 'Indigenous'},
-                        {'label': 'Disability', 'value': 'Disability'},
-                        {'label': 'Minority', 'value': 'Minority'},
-                        {'label': 'Veteran', 'value': 'Veteran'}
-                    ],
-                    value='Indigenous',
-                    style={'width': '50%'}
-                )
-            ], style={'padding': '20px'}),
-            grid_content("Attrition & Diversity Trends", [
-                'attrition-trend-graph',
-                'gender-trend-graph',
-                'diversity-trend-graph',
-                'performance-histogram'
+                graph_grid("satisfaction-pie", "job-satisfaction-line-chart"),
+                graph_grid("overtime-satisfaction-bar-chart", "overtime-performance-count-bar-chart")
             ])
-        ])
+        elif tab == 'tab-3':
+            return html.Div([
+                graph_grid("salary-distribution", "salary-hike-vs-performance"),
+                graph_grid("years-at-company", "attrition-by-department")
+            ])
+        elif tab == 'tab-4':
+            return html.Div([
+                graph_grid("hiring-source-bar-chart", "average-training-bar-chart"),
+                graph_grid("years-with-manager-histogram")
+            ])
+        elif tab == 'tab-5':
+            return html.Div([
+                html.Div([
+                    html.Div([
+                        html.H4("Predicted Attrition by Years", style={'color': '#63b3ed'}),
+                        dcc.Graph(id='attrition-trend-graph', style={'height': '300px'})
+                    ], style={'width': '48%', 'marginBottom': '25px'}),
 
+                    html.Div([
+                        html.H4("Gender Diversity Trends", style={'color': '#63b3ed'}),
+                        html.Label('Select Gender Category', style={'color': '#a0aec0'}),
+                        dcc.Dropdown(
+                            id='gender-dropdown',
+                            options=[
+                                {'label': 'Female', 'value': 'IsFemale'},
+                                {'label': 'Male', 'value': 'IsMale'},
+                                {'label': 'Transgender', 'value': 'IsTransgender'},
+                                {'label': 'Non-binary', 'value': 'IsNon_binary_non_conforming'},
+                                {'label': 'Prefer not to say', 'value': 'IsPrefer_not_to_say'},
+                                {'label': 'Other', 'value': 'IsOther'},
+                            ],
+                            value='IsFemale',
+                            style={'marginBottom': '10px'}
+                        ),
+                        dcc.Graph(id='gender-trend-graph', style={'height': '300px'})
+                    ], style={'width': '48%'}),
+                ], style={'display': 'flex', 'justifyContent': 'space-between', 'gap': '2%'}),
+
+                html.Div([
+                    html.Div([
+                        html.H4("Diversity Trends", style={'color': '#63b3ed'}),
+                        html.Label('Select Diversity Category', style={'color': '#a0aec0'}),
+                        dcc.Dropdown(
+                            id='diversity-dropdown',
+                            options=[
+                                {'label': 'Indigenous', 'value': 'Indigenous'},
+                                {'label': 'Disability', 'value': 'Disability'},
+                                {'label': 'Minority', 'value': 'Minority'},
+                                {'label': 'Veteran', 'value': 'Veteran'}
+                            ],
+                            value='Indigenous',
+                            style={'marginBottom': '10px'}
+                        ),
+                        dcc.Graph(id='diversity-trend-graph', style={'height': '300px'})
+                    ], style={'width': '48%', 'marginBottom': '25px'}),
+
+                    html.Div([
+                        html.H4("Predicted Performance Rating Distribution", style={'color': '#63b3ed'}),
+                        dcc.Graph(id='performance-histogram', style={'height': '300px'})
+                    ], style={'width': '48%'})
+                ], style={'display': 'flex', 'justifyContent': 'space-between', 'gap': '4%'}),
+            ])
+
+    # Register page-specific callbacks
     page1_callbacks(app)
     page2_callbacks(app)
     page3_callbacks(app)

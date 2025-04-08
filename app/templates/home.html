@@ -17,7 +17,7 @@
     .hero-section {
       width: 100%;
       background: linear-gradient(to right, #1e3a8a, #2563eb);
-      padding: 60px 40px;
+      padding: 80px 40px;
       text-align: center;
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
     }
@@ -32,92 +32,85 @@
     .hero-section p {
       font-size: 18px;
       color: #cbd5e0;
-      margin-bottom: 25px;
+      margin-bottom: 35px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
     }
 
     .main-button {
       display: inline-block;
-      padding: 14px 28px;
-      font-size: 16px;
+      padding: 16px 32px;
+      font-size: 18px;
       font-weight: bold;
       color: white;
-      background: linear-gradient(135deg, #007bff, #0056b3);
+      background: linear-gradient(135deg, #10b981, #059669);
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       text-decoration: none;
-      box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.3);
+      box-shadow: 0px 6px 12px rgba(16, 185, 129, 0.4);
       transition: all 0.3s ease;
     }
 
     .main-button:hover {
-      background: linear-gradient(135deg, #0056b3, #004494);
-      transform: translateY(-2px);
-    }
-
-    .dashboard-section {
-      width: 100%;
-      padding: 0 40px 40px;
-      box-sizing: border-box;
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-3px);
     }
 
     .signout-link {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    background-color: #555;
-    border-radius: 5px;
-    z-index: 1000;
-    font-weight: bold;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      background-color: #374151;
+      border-radius: 6px;
+      font-weight: bold;
+      z-index: 1000;
     }
 
     .signout-link:hover {
-      background-color: #777;
-    }
-
-    iframe {
-      width: 100%;
-      height: 1000px;
-      border: none;
-      border-radius: 14px;
-      background-color: #1a202c;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      background-color: #4b5563;
     }
 
     @media (max-width: 768px) {
       .hero-section {
-        padding: 40px 20px;
+        padding: 50px 20px;
       }
 
       .hero-section h1 {
-        font-size: 30px;
+        font-size: 32px;
       }
 
       .main-button {
         width: 100%;
-        font-size: 15px;
+        font-size: 16px;
+        padding: 14px;
       }
 
-      .dashboard-section {
-        padding: 0 10px 40px;
+      .button-group {
+        flex-direction: column;
+        gap: 15px;
       }
     }
   </style>
 </head>
 <body>
+  <a href="/login" class="signout-link">Sign Out</a> 
+
   <div class="hero-section">
-    <h1>FairLens HR Analytics Dashboard</h1>
-    <p>Gain valuable insights into recruitment and performance using data-driven analytics.</p>
-    <a href="/job-management" class="main-button">🚀 Job & Resume Management</a>
-  </div>
+    <h1>Welcome to FairLens</h1>
+    <p>Select a module to get started</p>
 
-  <a href="/login" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a> 
-   
-  <div class="dashboard-section">
-    <iframe src="/dashboard/" class="dashboard-frame"></iframe>
-
+    <div class="button-group">
+      <a href="/job-management" class="main-button">📄 Job & Resume Management</a>
+      <a href="/dashboard/" class="main-button">📊 HR Analytics Dashboard</a>
+    </div>
   </div>
 </body>
 </html>

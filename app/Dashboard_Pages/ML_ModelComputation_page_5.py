@@ -6,22 +6,22 @@ from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVR
 from sklearn.preprocessing import StandardScaler
+from statsmodels.tsa.arima.model import ARIMA
 
 def load_local_company_data():
     return pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
 
-def get_predicted_attrition_by_years():
-
+def get_predicted_attrition_by_years(forecast_years=5):
     df = load_local_company_data().copy()
 
     if 'Attrition' not in df.columns:
         raise ValueError("Column 'Attrition' is missing from the dataset.")
+    
     df['Attrition'] = df['Attrition'].apply(lambda x: 1 if x == 'Yes' else 0)
     df = pd.get_dummies(df, columns=['Department', 'OverTime'], drop_first=True)
 
     features = ['Age', 'YearsAtCompany', 'JobSatisfaction',
                 'WorkLifeBalance', 'PerformanceRating', 'PayRate']
-
     features += [col for col in df.columns if col.startswith(('Department_', 'OverTime_'))]
 
     if not all(feature in df.columns for feature in features):
@@ -30,21 +30,32 @@ def get_predicted_attrition_by_years():
     X = df[features]
     y = df['Attrition']
 
+    # ML model just for learning attrition patterns
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
     xgb_model = XGBClassifier(random_state=42, eval_metric='logloss')
     xgb_model.fit(X_train, y_train)
-
     y_pred = xgb_model.predict(X_test)
+
     X_test_with_predictions = X_test.copy()
     X_test_with_predictions['Predicted_Attrition'] = y_pred
 
-    predicted_attrition_by_years = X_test_with_predictions.groupby('YearsAtCompany')['Predicted_Attrition'].mean()
+    # Aggregate by 'YearsAtCompany' to create a time series
+    ts = X_test_with_predictions.groupby('YearsAtCompany')['Predicted_Attrition'].mean().sort_index()
 
-    return predicted_attrition_by_years
+    # Fit ARIMA model to forecast attrition
+    model = ARIMA(ts, order=(1, 1, 1))  # You can tune these params
+    fitted_model = model.fit()
 
-def get_gender_diversity_predictions():
+    forecast = fitted_model.forecast(steps=forecast_years)
+    forecast.index = range(ts.index.max() + 1, ts.index.max() + 1 + forecast_years)
 
+    # Combine historical + forecast
+    full_series = pd.concat([ts, forecast])
+    full_series.name = 'Attrition_Forecast'
+
+    return full_series
+
+def get_gender_diversity_predictions(forecast_years=5): 
     df = load_local_company_data().copy()
 
     if 'DateofHire' not in df.columns or 'Sex' not in df.columns:
@@ -65,26 +76,22 @@ def get_gender_diversity_predictions():
     } | {'Sex': 'count'}).reset_index()
     gender_trends.rename(columns={'Sex': 'TotalHires'}, inplace=True)
 
-    X = gender_trends[['Year', 'TotalHires']]
-    totalhires_growth = gender_trends['TotalHires'].pct_change().mean()
     predictions = {}
 
     for gender in [f'Is{sanitized}' for sanitized in sanitized_gender_categories]:
-        y = gender_trends[gender]
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        ts = gender_trends.set_index('Year')[gender]
+        ts.index = pd.PeriodIndex(ts.index, freq='Y')  # ✅ convert index to PeriodIndex
 
-        rf = RandomForestRegressor(random_state=42, n_estimators=100)
-        rf.fit(X_train, y_train)
-
-        future_years = pd.DataFrame({
-            'Year': range(gender_trends['Year'].max() + 1, gender_trends['Year'].max() + 16),
-            'TotalHires': [
-                gender_trends['TotalHires'].iloc[-1] * (1 + totalhires_growth) ** (i + 1)
-                for i in range(15)
-            ]
-        })
-        future_predictions = rf.predict(future_years)
-        predictions[gender] = future_predictions
+        try:
+            model = ARIMA(ts, order=(1, 1, 1))
+            fitted_model = model.fit()
+            forecast = fitted_model.forecast(steps=forecast_years)
+            forecast.index = pd.period_range(start=ts.index[-1] + 1, periods=forecast_years, freq='Y')
+            predictions[gender] = forecast
+        except Exception as e:
+            print(f"ARIMA model failed for {gender}: {e}")
+            fallback_index = pd.period_range(start=ts.index[-1] + 1, periods=forecast_years, freq='Y')
+            predictions[gender] = pd.Series([None] * forecast_years, index=fallback_index)
 
     return gender_trends, predictions
    
