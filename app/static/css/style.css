@@ -29,7 +29,7 @@ header {
 /* Container */
 .container {
   width: 90%;
-  max-width: 500px;
+  max-width: 800px;
   margin: 40px auto;
   padding: 30px;
   background: rgba(45, 55, 72, 0.5);

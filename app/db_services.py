@@ -51,11 +51,12 @@ def get_company_by_companyid(company_id):
     )
     return response['Items'][0] if response['Items'] else None
 
-def insert_diversity(diversity_id, male_rep, female_rep, transgender_rep, lgbtq_rep, indigenous_rep, disability_rep, minority_rep, veteran_rep):
+def insert_diversity(company_id,diversity_id, male_rep, female_rep, transgender_rep, lgbtq_rep, indigenous_rep, disability_rep, minority_rep, veteran_rep):
     table = get_dynamodb().Table('Diversity')
     table.put_item(
         Item={
             'diversity_id': diversity_id,
+            'company_id':company_id,
             'male_representation': male_rep,
             'female_representation':female_rep,
             'transgender_representation': transgender_rep,
@@ -68,11 +69,11 @@ def insert_diversity(diversity_id, male_rep, female_rep, transgender_rep, lgbtq_
     )
 
 
-def get_diversity_by_diversityid(diversity_id):
+def get_diversity_by_companyid(company_id):
     table = get_dynamodb().Table('Diversity')
     response = table.scan(
-        FilterExpression="diversity_id = :diversity_id",
-        ExpressionAttributeValues={":diversity_id": diversity_id}
+        FilterExpression="company_id = :company_id",
+        ExpressionAttributeValues={":company_id": company_id}
     )
     return response['Items'][0] if response['Items'] else None
 

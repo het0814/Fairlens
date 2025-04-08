@@ -140,46 +140,71 @@
         <div class="upload-group">
           <label>{{ form.male_resume.label }}</label>
           {{ form.male_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.male_resume %}
+            <small>Fetched: {{ fetched_filenames.male_resume | join(', ') }}</small>
+          {% endif %}
         </div>
 
         <div class="upload-group">
           <label>{{ form.female_resume.label }}</label>
           {{ form.female_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.female_resume %}
+            <small>Fetched: {{ fetched_filenames.female_resume | join(', ') }}</small>
+          {% endif %}
         </div>
 
         <div class="upload-group">
           <label>{{ form.transgender_resume.label }}</label>
           {{ form.transgender_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.transgender_resume %}
+            <small>Fetched: {{ fetched_filenames.transgender_resume | join(', ') }}</small>
+          {% endif %}
         </div>
 
         <div class="upload-group">
           <label>{{ form.lgbtq_resume.label }}</label>
           {{ form.lgbtq_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.lgbtq_resume %}
+            <small>Fetched: {{ fetched_filenames.lgbtq_resume | join(', ') }}</small>
+          {% endif %}
         </div>
 
         <div class="upload-group">
           <label>{{ form.indigenous_resume.label }}</label>
           {{ form.indigenous_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.indigenous_resume %}
+            <small>Fetched: {{ fetched_filenames.indigenous_resume | join(', ') }}</small>
+          {% endif %}
         </div>
 
         <div class="upload-group">
           <label>{{ form.disability_resume.label }}</label>
           {{ form.disability_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.disability_resume %}
+            <small>Fetched: {{ fetched_filenames.disability_resume | join(', ') }}</small>
+          {% endif %}
         </div>
 
         <div class="upload-group">
           <label>{{ form.minority_resume.label }}</label>
           {{ form.minority_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.minority_resume %}
+            <small>Fetched: {{ fetched_filenames.minority_resume | join(', ') }}</small>
+          {% endif %}
         </div>
 
         <div class="upload-group">
           <label>{{ form.veteran_resume.label }}</label>
           {{ form.veteran_resume(class="form-control", multiple=True) }}
+          {% if fetched_filenames and fetched_filenames.veteran_resume %}
+            <small>Fetched: {{ fetched_filenames.veteran_resume | join(', ') }}</small>
+          {% endif %}
         </div>
       </div>
 
       <div class="button-group">
         {{ form.analyze(class="analyze-button") }}
+        <button type="submit" name="fetch_cloud" class="analyze-button">Fetch from Cloud</button>
       </div>
     </form>
   </div>

@@ -131,7 +131,7 @@ def diversity_goal_setup(company_id):
     suggestions= get_diversity_weights(province)
     if form.validate_on_submit():
         diversity_id = str(uuid.uuid4())
-        insert_diversity(diversity_id,form.male_representation.data,form.female_representation.data,form.transgender_representation.data,form.lgbtq_representation.data,form.indigenous_representation.data,form.disability_representation.data,form.minority_representation.data,form.veteran_representation.data)
+        insert_diversity(company_id,diversity_id,form.male_representation.data,form.female_representation.data,form.transgender_representation.data,form.lgbtq_representation.data,form.indigenous_representation.data,form.disability_representation.data,form.minority_representation.data,form.veteran_representation.data)
         flash('Diversity goals saved successfully!', 'success')
         return redirect(url_for('main.index'))
         
@@ -197,12 +197,11 @@ def delete_job(job_id):
 @main.route('/analyze-resume/<job_id>', methods=['GET', 'POST'])
 def analyze_resume(job_id):
     user_id=session.get('username')
+    company_id = get_company_by_userid(user_id)
     job=get_job_by_jobid(job_id)
     form = ResumeUploadForm()
 
-    if form.validate_on_submit():
-        resume_analysis_results = {}
-        categories = {
+    categories = {
             "male_resume": "Male Representation",
             "female_resume": "Female Representation",
             "transgender_resume": "Transgender Representation",
@@ -212,56 +211,96 @@ def analyze_resume(job_id):
             "minority_resume": "Minority Representation",
             "veteran_resume": "Veteran Representation"
         }
+    if request.method == "POST" and "fetch_cloud" in request.form:
+        categorized_resumes = get_resumes_from_s3()
+        
+        # Save the raw resumes in session (or a better option like cache/db if they’re large)
+        session["fetched_resumes"] = {
+            k: [(filename, file_content.decode('latin1')) for filename, file_content in v]
+            for k, v in categorized_resumes.items()
+        }
+
+        # Just prepare filenames to display in UI
+        fetched_filenames = {
+            k: [filename for filename, _ in v]
+            for k, v in categorized_resumes.items()
+        }
+        print(fetched_filenames)
+        return render_template("analyze_resume.html",form=form,job=job,fetched_filenames=fetched_filenames   )
+    
+    if form.validate_on_submit():
+        resume_analysis_results = {}
         job_description = job["description"]
 
         if not job_description:
             flash("Job description is required", "error")
-            return render_template("analyze_resume.html", form=form, job=job, message="No job description")
+            return render_template("analyze_resume.html", form=form, job=job)
 
-        # Iterate through each category separately
+        # Load from session if cloud data was fetched
+        fetched_resumes = session.pop("fetched_resumes", None)
+
         for field_name, category in categories.items():
+            score_data = []
+
+            # First check uploaded files
             uploaded_files = getattr(form, field_name).data
-            score_data = []  
-            if uploaded_files:  
+            if uploaded_files:
                 for resume_file in uploaded_files:
-                    file_copy = BytesIO(resume_file.read())  
+                    file_copy = BytesIO(resume_file.read())
                     file_copy.seek(0)
 
                     upload_Resume(job_id, resume_file)
                     resume_text = extract_text(file_copy, resume_file.filename)
-
-                    # Perform analysis
-                    resume_analysis = analyze_resume_service(resume_text, job_description)
                     score = score_resume(resume_text, job_description)
                     donut_analysis = donut_score_resume(resume_text, job_description)
-
-                    # Store individual resume analysis
-                    analysis_data = [{
-                        "file_name": resume_file.filename, 
-                        "analysis": resume_analysis, 
-                        "score": score,
-                        "donut_analysis": donut_analysis
-                    }]
-                    
                     resume_id = str(uuid.uuid4())
 
-                    # Store for ranking
+                    insert_analysis(user_id, resume_id, job_id, resume_file.filename, [{
+                        "file_name": resume_file.filename,
+                        "analysis": analyze_resume_service(resume_text, job_description),
+                        "score": score,
+                        "donut_analysis": donut_analysis
+                    }])
+
                     score_data.append({
                         "resume_id": resume_id,
-                        "file_name": resume_file.filename, 
+                        "file_name": resume_file.filename,
                         "score": score,
                         "donut_analysis": donut_analysis
                     })
 
-                    # Insert into database
-                    insert_analysis(user_id, resume_id, job_id, resume_file.filename, analysis_data)
+            # If no uploaded files but cloud resumes are there
+            elif fetched_resumes and field_name in fetched_resumes:
+                for filename, raw_content in fetched_resumes[field_name]:
+                    file_bytes = raw_content.encode('latin1')
+                    file_copy = BytesIO(file_bytes)
+                    file_copy.seek(0)
 
-                # Rank resumes for the current category
+                    resume_text = extract_text(file_copy, filename)
+                    score = score_resume(resume_text, job_description)
+                    donut_analysis = donut_score_resume(resume_text, job_description)
+                    resume_id = str(uuid.uuid4())
+
+                    insert_analysis(user_id, resume_id, job_id, filename, [{
+                        "file_name": filename,
+                        "analysis": analyze_resume_service(resume_text, job_description),
+                        "score": score,
+                        "donut_analysis": donut_analysis
+                    }])
+
+                    score_data.append({
+                        "resume_id": resume_id,
+                        "file_name": filename,
+                        "score": score,
+                        "donut_analysis": donut_analysis
+                    })
+
+            if score_data:
                 rankings = json.loads(rank_resumes(score_data))["rankings"]
-
-                # Store results in dictionary
                 resume_analysis_results[category] = rankings
-        return render_template("resume_analysis_result.html", job_info=job,analysis_results=resume_analysis_results)
+
+        suggestions = get_diversity_by_companyid(company_id)
+        return render_template("resume_analysis_result.html", job_info=job, analysis_results=resume_analysis_results, suggestions=suggestions)
     return render_template("analyze_resume.html", form=form,job=job)
 
 @main.route('/resume-analysis/<resume_id>')
