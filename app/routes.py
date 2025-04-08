@@ -198,6 +198,7 @@ def delete_job(job_id):
 def analyze_resume(job_id):
     user_id=session.get('username')
     company_id = get_company_by_userid(user_id)
+    print(company_id,user_id,"hereee")
     job=get_job_by_jobid(job_id)
     form = ResumeUploadForm()
 
@@ -225,7 +226,6 @@ def analyze_resume(job_id):
             k: [filename for filename, _ in v]
             for k, v in categorized_resumes.items()
         }
-        print(fetched_filenames)
         return render_template("analyze_resume.html",form=form,job=job,fetched_filenames=fetched_filenames   )
     
     if form.validate_on_submit():
@@ -300,6 +300,7 @@ def analyze_resume(job_id):
                 resume_analysis_results[category] = rankings
 
         suggestions = get_diversity_by_companyid(company_id)
+        print(suggestions)
         return render_template("resume_analysis_result.html", job_info=job, analysis_results=resume_analysis_results, suggestions=suggestions)
     return render_template("analyze_resume.html", form=form,job=job)
 
