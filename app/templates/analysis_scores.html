@@ -121,6 +121,23 @@
       line-height: 1.6;
     }
 
+    .signout-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    background-color: #555;
+    border-radius: 5px;
+    z-index: 1000;
+    font-weight: bold;
+    }
+
+    .signout-link:hover {
+      background-color: #777;
+    }
+
     canvas {
       max-width: 100%;
     }
@@ -132,7 +149,10 @@
         <h1>Resume Analysis Dashboard</h1>
         <!-- <a href="/" class="home-btn">Home</a> -->
       </div>
-
+      
+    <a href="/home" class="signout-link" style="top: 20px; right: 120px;">Home</a>
+    <a href="/login" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a>
+      
   <div class="top-row">
     <div class="donut-group">
       {% for category, value in analysis_result.donut_scores.items() %}

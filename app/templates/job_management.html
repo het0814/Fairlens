@@ -53,6 +53,28 @@
       color: #60a5fa;
     }
 
+    .navbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background-color: #333;
+      padding: 10px 20px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      margin-left: 10px;
+      background-color: #555;
+      border-radius: 5px;
+    }
+
+    .navbar a:hover {
+      background-color: #777;
+    }
+
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -122,6 +144,23 @@
       margin-top: 15px;
     }
 
+    .signout-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    background-color: #555;
+    border-radius: 5px;
+    z-index: 1000;
+    font-weight: bold;
+    }
+
+    .signout-link:hover {
+      background-color: #777;
+    }
+
     tr.highlight {
       background-color: #4b5563 !important;
     }
@@ -132,6 +171,9 @@
     <header>
       <h1>Job & Resume Management Dashboard</h1>
     </header>
+
+    <a href="/home" class="signout-link" style="top: 20px; right: 120px;">Home</a>
+    <a href="/login" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a>
 
     <div class="stats-cards">
       <div class="card">

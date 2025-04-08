@@ -111,6 +111,23 @@
       box-shadow: 0px 6px 10px rgba(40, 167, 69, 0.4);
     }
 
+    .signout-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    background-color: #555;
+    border-radius: 5px;
+    z-index: 1000;
+    font-weight: bold;
+    }
+
+    .signout-link:hover {
+      background-color: #777;
+    }
+
     @media (max-width: 768px) {
       .upload-container {
         grid-template-columns: 1fr;
@@ -123,6 +140,9 @@
     <header>
       <h1>Analyze Resumes for Job Position: "{{ job['position'] }}"</h1>
     </header>
+
+    <a href="/home" class="signout-link" style="top: 20px; right: 120px;">Home</a>
+    <a href="/login" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a>
 
     <div class="card">
       <p><strong>Department ID:</strong> {{ job['department_id'] }}</p>
