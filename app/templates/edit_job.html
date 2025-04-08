@@ -92,6 +92,23 @@
       background-color: #2d3748;
     }
 
+    .signout-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    background-color: #555;
+    border-radius: 5px;
+    z-index: 1000;
+    font-weight: bold;
+    }
+
+    .signout-link:hover {
+      background-color: #777;
+    }
+
     @media (max-width: 600px) {
       .button-group {
         flex-direction: column;
@@ -104,6 +121,9 @@
     <header>
       <h1>Edit Job Posting</h1>
     </header>
+
+    <a href="/home" class="signout-link" style="top: 20px; right: 120px;">Home</a>
+    <a href="/login" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a>
 
     <form method="POST" action="/edit-job/{{ job_id }}" onsubmit="return confirmUpdate()">
       {{ form.hidden_tag() }}

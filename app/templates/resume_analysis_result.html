@@ -58,6 +58,28 @@
             margin-bottom: 10px;
         }
 
+        .navbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        background-color: #333;
+        padding: 10px 20px;
+        }
+
+        .navbar a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        margin-left: 10px;
+        background-color: #555;
+        border-radius: 5px;
+        }
+
+        .navbar a:hover {
+        background-color: #777;
+        }
+
+
         .suggestion-box {
             flex: 1 1 35%;
             background: #2d3748;
@@ -124,6 +146,22 @@
             background: #218838;
         }
 
+        .signout-link {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        background-color: #555;
+        border-radius: 5px;
+        z-index: 1000;
+        font-weight: bold;
+        }
+
+        .signout-link:hover {
+        background-color: #777;
+        }
     </style>
 </head>
 <body>
@@ -133,6 +171,9 @@
         <div class="header">
             <h1>Resume Analysis Results for "{{ job_info['position'] }}"</h1>
         </div>
+
+        <a href="/home" class="signout-link" style="top: 20px; right: 120px;">Home</a>
+        <a href="/login" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a>
 
         <!-- Job Information Card -->
         <div class="card">
