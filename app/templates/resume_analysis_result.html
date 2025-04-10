@@ -174,15 +174,13 @@
 </head>
 <body>
 
+    <a href="/home" class="signout-link" style="top: 20px; right: 120px;">Home</a>
+    <a href="/logout" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a>
     <div class="container">
         <!-- Header Section -->
         <div class="header">
             <h1>Resume Analysis Results for "{{ job_info['position'] }}"</h1>
         </div>
-
-        <a href="/home" class="signout-link" style="top: 20px; right: 120px;">Home</a>
-        <a href="/logout" class="signout-link" style="top: 20px; right: 20px;">Sign Out</a>
-
         <!-- Job Information Card -->
         <div class="card">
             <p><strong>Job ID:</strong> {{ job_info['job_id'] }}</p>

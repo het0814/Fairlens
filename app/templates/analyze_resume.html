@@ -128,17 +128,17 @@
       background-color: #777;
     }
     .spinner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(15, 23, 42, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      display: none;
     }
 
     .spinner {
@@ -256,7 +256,9 @@
     </form>
   </div>
   <div class="spinner-overlay" id="loadingSpinner">
-    <div class="spinner"></div>
+    <!-- <div class="spinner"></div> -->
+    <!-- <img src="https://res.cloudinary.com/dtsuvx8dz/image/upload/v1716357077/o1imiun4wwcpia9uucgs.gif" alt="App screenshot" width="2432" height="1442" class="w-[15rem] rounded-md shadow-2xl"> -->
+    <img src="https://res.cloudinary.com/dtsuvx8dz/image/upload/v1716357077/o1imiun4wwcpia9uucgs.gif" alt="Loading..." style="width: 250px; max-width: 80%; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.4);">
   </div>
   
   <script>
