@@ -1,7 +1,7 @@
 import uuid
-from flask import Blueprint, render_template, redirect, url_for, flash,request, session
+from flask import Blueprint, render_template, redirect, url_for, flash,request, session, current_app
 from app.forms import LoginForm,SignupForm,CompanyProfileForm,DiversityGoalForm,JobForm,ResumeUploadForm
-from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 import os
 from app.AI_services import *
 from app.db_services import *
@@ -196,38 +196,34 @@ def delete_job(job_id):
 
 @main.route('/analyze-resume/<job_id>', methods=['GET', 'POST'])
 def analyze_resume(job_id):
-    user_id=session.get('username')
+    user_id = session.get('username')
     company_id = get_company_by_userid(user_id)
-    print(company_id,user_id,"hereee")
-    job=get_job_by_jobid(job_id)
+    job = get_job_by_jobid(job_id)
     form = ResumeUploadForm()
 
     categories = {
-            "male_resume": "Male Representation",
-            "female_resume": "Female Representation",
-            "transgender_resume": "Transgender Representation",
-            "lgbtq_resume": "LGBTQ Representation",
-            "indigenous_resume": "Indigenous Representation",
-            "disability_resume": "Disability Representation",
-            "minority_resume": "Minority Representation",
-            "veteran_resume": "Veteran Representation"
-        }
+        "male_resume": "Male Representation",
+        "female_resume": "Female Representation",
+        "transgender_resume": "Transgender Representation",
+        "lgbtq_resume": "LGBTQ Representation",
+        "indigenous_resume": "Indigenous Representation",
+        "disability_resume": "Disability Representation",
+        "minority_resume": "Minority Representation",
+        "veteran_resume": "Veteran Representation"
+    }
+
     if request.method == "POST" and "fetch_cloud" in request.form:
         categorized_resumes = get_resumes_from_s3()
-        
-        # Save the raw resumes in session (or a better option like cache/db if they’re large)
         session["fetched_resumes"] = {
             k: [(filename, file_content.decode('latin1')) for filename, file_content in v]
             for k, v in categorized_resumes.items()
         }
-
-        # Just prepare filenames to display in UI
         fetched_filenames = {
             k: [filename for filename, _ in v]
             for k, v in categorized_resumes.items()
         }
-        return render_template("analyze_resume.html",form=form,job=job,fetched_filenames=fetched_filenames   )
-    
+        return render_template("analyze_resume.html", form=form, job=job, fetched_filenames=fetched_filenames)
+
     if form.validate_on_submit():
         resume_analysis_results = {}
         job_description = job["description"]
@@ -236,47 +232,25 @@ def analyze_resume(job_id):
             flash("Job description is required", "error")
             return render_template("analyze_resume.html", form=form, job=job)
 
-        # Load from session if cloud data was fetched
         fetched_resumes = session.pop("fetched_resumes", None)
 
-        for field_name, category in categories.items():
-            score_data = []
+        def process_resume(app, source, resume_data, field_name, job_id, user_id, job_description):
+            with app.app_context():  # Provides app context inside thread
+                try:
+                    if source == "uploaded":
+                        resume_file = resume_data
+                        file_copy = BytesIO(resume_file.read())
+                        file_copy.seek(0)
+                        upload_Resume(job_id, resume_file)
+                        resume_text = extract_text(file_copy, resume_file.filename)
+                        filename = resume_file.filename
+                    else:
+                        filename, raw_content = resume_data
+                        file_bytes = raw_content.encode('latin1')
+                        file_copy = BytesIO(file_bytes)
+                        file_copy.seek(0)
+                        resume_text = extract_text(file_copy, filename)
 
-            # First check uploaded files
-            uploaded_files = getattr(form, field_name).data
-            if uploaded_files:
-                for resume_file in uploaded_files:
-                    file_copy = BytesIO(resume_file.read())
-                    file_copy.seek(0)
-
-                    upload_Resume(job_id, resume_file)
-                    resume_text = extract_text(file_copy, resume_file.filename)
-                    score = score_resume(resume_text, job_description)
-                    donut_analysis = donut_score_resume(resume_text, job_description)
-                    resume_id = str(uuid.uuid4())
-
-                    insert_analysis(user_id, resume_id, job_id, resume_file.filename, [{
-                        "file_name": resume_file.filename,
-                        "analysis": analyze_resume_service(resume_text, job_description),
-                        "score": score,
-                        "donut_analysis": donut_analysis
-                    }])
-
-                    score_data.append({
-                        "resume_id": resume_id,
-                        "file_name": resume_file.filename,
-                        "score": score,
-                        "donut_analysis": donut_analysis
-                    })
-
-            # If no uploaded files but cloud resumes are there
-            elif fetched_resumes and field_name in fetched_resumes:
-                for filename, raw_content in fetched_resumes[field_name]:
-                    file_bytes = raw_content.encode('latin1')
-                    file_copy = BytesIO(file_bytes)
-                    file_copy.seek(0)
-
-                    resume_text = extract_text(file_copy, filename)
                     score = score_resume(resume_text, job_description)
                     donut_analysis = donut_score_resume(resume_text, job_description)
                     resume_id = str(uuid.uuid4())
@@ -288,21 +262,49 @@ def analyze_resume(job_id):
                         "donut_analysis": donut_analysis
                     }])
 
-                    score_data.append({
+                    return {
                         "resume_id": resume_id,
                         "file_name": filename,
                         "score": score,
                         "donut_analysis": donut_analysis
-                    })
+                    }
+                except Exception as e:
+                    print(f"Error processing resume: {e}")
+                    return None
+
+
+        executor = ThreadPoolExecutor(max_workers=10)  
+
+        for field_name, category in categories.items():
+            score_data = []
+
+            uploaded_files = getattr(form, field_name).data
+            futures = []
+
+            app = current_app._get_current_object()
+            if uploaded_files:
+                for resume_file in uploaded_files:
+                    futures.append(executor.submit(process_resume, app, "uploaded", resume_file, field_name, job_id, user_id, job_description))
+
+            elif fetched_resumes and field_name in fetched_resumes:
+                for resume_tuple in fetched_resumes[field_name]:
+                    futures.append(executor.submit(process_resume, app, "cloud", resume_tuple, field_name, job_id, user_id, job_description))
+
+            # Collect results
+            for future in futures:
+                result = future.result()
+                if result:
+                    score_data.append(result)
 
             if score_data:
                 rankings = json.loads(rank_resumes(score_data))["rankings"]
                 resume_analysis_results[category] = rankings
 
+        executor.shutdown(wait=True)
         suggestions = get_diversity_by_companyid(company_id)
-        print(suggestions)
         return render_template("resume_analysis_result.html", job_info=job, analysis_results=resume_analysis_results, suggestions=suggestions)
-    return render_template("analyze_resume.html", form=form,job=job)
+
+    return render_template("analyze_resume.html", form=form, job=job)
 
 @main.route('/resume-analysis/<resume_id>')
 def resume_analysis(resume_id):
@@ -330,3 +332,8 @@ def resume_analysis(resume_id):
     }
 
     return render_template("analysis_scores.html", analysis_result=analysis_result)
+
+@main.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('main.login'))
