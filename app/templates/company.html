@@ -1,10 +1,25 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Profile</title>
+
+    <!-- External CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Inline CSS to make dropdown options black -->
+    <style>
+        select.form-control {
+            color: black;
+        }
+        select.form-control option {
+            color: black;
+            background-color: white; /* Optional for contrast */
+        }
+    </style>
+
+    <!-- JavaScript -->
     <script defer src="{{ url_for('static', filename='js/company_profile.js') }}"></script>
 </head>
 <body>
