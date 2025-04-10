@@ -127,6 +127,33 @@
     .signout-link:hover {
       background-color: #777;
     }
+    .spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    display: none;
+    }
+
+    .spinner {
+      border: 8px solid #cbd5e0;
+      border-top: 8px solid #38b2ac;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
     @media (max-width: 768px) {
       .upload-container {
@@ -228,5 +255,16 @@
       </div>
     </form>
   </div>
+  <div class="spinner-overlay" id="loadingSpinner">
+    <div class="spinner"></div>
+  </div>
+  
+  <script>
+    document.querySelectorAll('.analyze-button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.getElementById('loadingSpinner').style.display = 'flex';
+      });
+    });
+  </script>
 </body>
 </html>

@@ -273,7 +273,7 @@ def analyze_resume(job_id):
                     return None
 
 
-        executor = ThreadPoolExecutor(max_workers=10)  
+        executor = ThreadPoolExecutor(max_workers=20)  
 
         for field_name, category in categories.items():
             score_data = []
