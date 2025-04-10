@@ -3,10 +3,12 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
+import os
 
 def load_local_company_data():
 
-    df = pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
+    csv_path = os.path.join("app", "Dashboard_Pages", "data", "data.csv")
+    df = pd.read_csv(csv_path)
 
     hiring_source_data = df.groupby('RecruitmentSource').size().reset_index(name='Count')
 

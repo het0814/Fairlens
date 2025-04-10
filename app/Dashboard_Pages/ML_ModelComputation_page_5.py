@@ -7,9 +7,12 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVR
 from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.arima.model import ARIMA
+import os
 
 def load_local_company_data():
-    return pd.read_csv(r"app\Dashboard_Pages\data\data.csv")
+    csv_path = os.path.join("app", "Dashboard_Pages", "data", "data.csv")
+    df = pd.read_csv(csv_path)
+    return df
 
 def get_predicted_attrition_by_years(forecast_years=5):
     df = load_local_company_data().copy()
