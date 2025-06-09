@@ -2,7 +2,7 @@ from openai import OpenAI
 import json
 
 
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "enter your key here"
 
 # def model_inference(messages):
 #     response = openai.ChatCompletion.create(
