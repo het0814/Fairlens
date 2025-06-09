@@ -18,10 +18,10 @@ import base64
 
 main = Blueprint('main', __name__)
 
-COGNITO_REGION = "us-east-1"
-COGNITO_USER_POOL_ID = "us-east-1_lcY7osG9F"
-COGNITO_CLIENT_ID = "egsqef5om3gqsf2mnqaunt0p0"
-COGNITO_CLIENT_SECRET = "1c9s6s2r20445r36atckb3v9c4u6ms3q850vtj77734mqc1622v8"
+COGNITO_REGION = "us-east-"
+COGNITO_USER_POOL_ID = "us-east-"
+COGNITO_CLIENT_ID = "enter your id here"
+COGNITO_CLIENT_SECRET = "enter your key here"
 
 def generate_secret_hash(username, client_id, client_secret):
 
