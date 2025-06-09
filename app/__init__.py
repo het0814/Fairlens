@@ -8,9 +8,9 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'my_secret_key'
     app.config['UPLOAD_FOLDER'] = 'uploads'
-    app.config['DYNAMODB'] = boto3.resource('dynamodb', region_name="us-east-1",aws_access_key_id='AKIAYY7NL6Z7E74PS7EG',aws_secret_access_key='nTlUD1XVpMJOKqJJACt3Pfu8MWQOw1q0D79W8Thw')
+    app.config['DYNAMODB'] = boto3.resource('dynamodb', region_name="us-east-1",aws_access_key_id='enter your id here',aws_secret_access_key='enter your key here')
     app.config['AWS_S3_BUCKET'] = 'fairlens'
-    app.config['S3_RESOURCE'] = boto3.resource('s3', region_name='us-east-1',aws_access_key_id='AKIAYY7NL6Z7E74PS7EG',aws_secret_access_key='nTlUD1XVpMJOKqJJACt3Pfu8MWQOw1q0D79W8Thw')
+    app.config['S3_RESOURCE'] = boto3.resource('s3', region_name='us-east-1',aws_access_key_id='enter your id here',aws_secret_access_key='enter your key here')
     app.config["SESSION_TYPE"] = "filesystem"
     app.config["SESSION_FILE_DIR"] = "/tmp/flask_session"
     app.config["SESSION_PERMANENT"] = False
